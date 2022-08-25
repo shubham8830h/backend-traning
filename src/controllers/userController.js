@@ -4,7 +4,7 @@ const UserModel= require("../models/userModel")
 
 
 const basicCode= async function(req, res) {
-    let tokenDataInHeaders= req.headers.token
+    // let tokenDataInHeaders= req.headers.token
     console.log(tokenDataInHeaders)
 
     console.log( "HEADER DATA ABOVE")

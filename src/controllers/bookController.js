@@ -8,7 +8,9 @@ const createBook= async function (req, res) {
     res.send({msg: savedData})
 }
 
-
+const log=async function(req,res){
+    console.log("")
+}
 
 
 
