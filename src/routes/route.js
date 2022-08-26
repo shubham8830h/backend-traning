@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 // const UserModel= require("../models/userModel.js")
 const UserController= require("../controllers/userController")
-const BookController= require("../controllers/bookController")
+const productController= require("../controllers/productController")
+const orderController=require("../controllers/orderController")
 const commonMW = require ("../middlewares/commonMiddlewares")
 
 router.get("/test-me", function (req, res) {
@@ -10,9 +11,15 @@ router.get("/test-me", function (req, res) {
 })
 
 
+//1
+router.post("/createProduct", productController.createBook)
 
+//2
+router.post("/createUser",commonMW.mid3,UserController.basicCode)
 
-router.post("/createBook", BookController.createBook  )
+//3
+router.post("/",commonMW.mid2,orderController.orderPurches)
+
 
 
 
@@ -48,15 +55,12 @@ router.post("/createBook", BookController.createBook  )
 
 
 
-router.get("/basicRoute", commonMW.mid1, commonMW.mid2, commonMW.mid3, commonMW.mid4, UserController.basicCode)
+// router.get("/basicRoute", commonMW.mid1, commonMW.mid2, commonMW.mid3, commonMW.mid4, UserController.basicCode)
 
 
 
 // router.get("/basicRoute2", commonMW.mid1, UserController.basicCode2)
 // router.get("/basicRoute3", commonMW.mid2, UserController.basicCode3)
 // router.get("/basicRoute4", commonMW.mid1, commonMW.mid4, UserController.basicCode4)
-
-
-
 
 module.exports = router;
