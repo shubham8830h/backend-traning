@@ -1,15 +1,18 @@
 # TOPIC: Authentication
 
 ## Authentication with JWT
+
 - Token generation
 - Token verification
 
-*Note:* Remember that authentication means validating the identity of a user. Both token generation and verification together implement authentication. 
+_Note:_ Remember that authentication means validating the identity of a user. Both token generation and verification together implement authentication.
 Think of this like getting an ID card the first day of your college and then showing that to a guard seated outside your college's campus gate in future. By showing them this token you are confirming your identity to them. Only a legitimate(valid) student who has taken the admission can own an official ID card.
 
 ## Assignment
+
 - For this assignment you have to create a new branch - assignment/auth-1
 - Your user document should look like this
+
 ```
  	{
     "_id" : ObjectId("6226e3d2b98f22b349ca58be"),
@@ -19,7 +22,7 @@ Think of this like getting an ID card the first day of your college and then sho
     "emailId" : "sk@gmail.com",
     "password" : "password123",
     "gender" : "female",
-	"isDeleted": false, //default value is false 
+	"isDeleted": false, //default value is false
     "age" : 12,
     "createdAt" : ISODate("2022-03-08T05:04:18.737Z"),
     "updatedAt" : ISODate("2022-03-08T05:04:18.737Z"),
@@ -27,10 +30,10 @@ Think of this like getting an ID card the first day of your college and then sho
 }
 ```
 
+- Write a **POST api /users** to register a user from the user details in request body.
+- Write a **\*POST api /login** to login a user that takes user details - email and password from the request body. If the credentials don't match with any user's data return a suitable error.
+  On successful login, generate a JWT token and return it in response body. Example
 
-- Write a **POST api /users** to register a user from the user details in request body. 
-- Write a ***POST api /login** to login a user that takes user details - email and password from the request body. If the credentials don't match with any user's data return a suitable error.
-On successful login, generate a JWT token and return it in response body. Example 
 ```
 {
     status: true,
@@ -40,12 +43,10 @@ On successful login, generate a JWT token and return it in response body. Exampl
     }
  }
 ```
+
 - Write a **GET api /users/:userId** to fetch user details. Pass the userId as path param in the url. Check that request must contain **x-auth-token** header. If absent, return a suitable error.
-If present, check that the token is valid.
+  If present, check that the token is valid.
 - Write a **PUT api /users/:userId** to update user details. Pass the userId as path param in the url and update the attributes received in the request body. Check that request must contain **x-auth-token** header. If absent, return a suitable error.
 - Write a **DELETE api /users/:userId** that takes the userId in the path params and marks the isDeleted attribute for a user as true. Check that request must contain **x-auth-token** header. If absent, return a suitable error.
 - Once, all the apis are working fine, move the authentication related code in a middleware called auth.js
 - Add this middleware at route level in the routes where applicable.
-
-
-
