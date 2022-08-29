@@ -4,11 +4,11 @@ const OrderdocumentSchema = new mongoose.Schema(
   {
     userId: {
       type: ObjectId,
-      ref: userDocument,
+      ref: "userdocument"
     },
     productId: {
       type: ObjectId,
-      ref: productDocument,
+      ref: "productDocument"
     },
     amount: Number,
     isFreeAppUser: Boolean,

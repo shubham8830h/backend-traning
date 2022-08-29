@@ -4,31 +4,35 @@
 //   next();
 // };
 
-const mid2 = function (req, res, next) {
- let header = req.headers.isfreeappuser;
- if (!header) {
-   return res.send({
-     status: false,
-     msg: "request is missing a mandatory header ",
-   });
- }
-  next();
-};
+const documentModel = require("../models/documentModel");
+const productModel = require("../models/productModel");
+const userModel = require("../models/userModel");
 
-const mid3 = function (req, res, next) {
-  let request = req.headers.isfreeappuser;
-  if (!request) {
-    return res.send({ status: true, msg: "headers is mandatory" });
+const mid2 = function (req, res, next) {
+  let header = req.headers.isfreeappuser;
+  if (!header) {
+    return res.send({
+      status: false,
+      msg: "request is missing a mandatory header ",
+    });
   }
   next();
 };
 
-// const mid4 = function (req, res, next) {
-//   console.log("Hi I am a middleware named Mid4");
-//   next();
-// };
+const mid3 = async function (req, res, next) {
+  let productExit = req.body;
+  let productfind = await productModel.findById(productExit.productId);
+  if (!productfind) {
+    return res.send({ msg: "productid is not present" });
+  }
+  let userfind = await userModel.findById(productExit.userId);
+  if (!userfind) {
+    return res.send({ msg: "userid is not present" });
+  }
+  if (userfind && productfind) {
+    next();
+  }
+};
 
-// module.exports.mid1 = mid1;
 module.exports.mid2 = mid2;
 module.exports.mid3 = mid3;
-// module.exports.mid4 = mid4;

@@ -1,39 +1,33 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-// const UserModel= require("../models/userModel.js")
-const UserController= require("../controllers/userController")
-const productController= require("../controllers/productController")
-const orderController=require("../controllers/orderController")
-const commonMW = require ("../middlewares/commonMiddlewares")
+const UserModel = require("../models/userModel.js");
+const UserController = require("../controllers/userController");
+const productController = require("../controllers/productController");
+const orderController = require("../controllers/orderController");
+const commonMW = require("../middlewares/commonMiddlewares");
 
 router.get("/test-me", function (req, res) {
-    res.send("My first ever api!")
-})
-
+  res.send("My first ever api!");
+});
 
 //1
-router.post("/createProduct", productController.createBook)
+router.post("/createProduct", productController.createBook);
 
 //2
-router.post("/createUser",commonMW.mid3,UserController.basicCode)
+router.post("/createUser", commonMW.mid2, UserController.basicCode);
 
 //3
-router.post("/",commonMW.mid2,orderController.orderPurches)
-
-
-
-
+router.post("/ordercontroller", commonMW.mid3, orderController.orderPurches);
 
 // router.post("/createUser", UserController.createUser  )
 // router.get("/getUsersData", UserController.getUsersData)
-
 
 // const mid1= function ( req, res, next) {
 //     console.log("Hi I am a middleware named Mid1")
 //     // logic
 //     let loggedIn = false
 
-//     if (loggedIn== true) { 
+//     if (loggedIn== true) {
 //         console.log( "OK LOGGED IS IS TRUE NOW")
 //         next ()
 //     }
@@ -51,13 +45,7 @@ router.post("/",commonMW.mid2,orderController.orderPurches)
 // router.get('/termsAndConditions',  UserController.termsAndConditions)
 // router.get('/register',  UserController.register)
 
-
-
-
-
 // router.get("/basicRoute", commonMW.mid1, commonMW.mid2, commonMW.mid3, commonMW.mid4, UserController.basicCode)
-
-
 
 // router.get("/basicRoute2", commonMW.mid1, UserController.basicCode2)
 // router.get("/basicRoute3", commonMW.mid2, UserController.basicCode3)

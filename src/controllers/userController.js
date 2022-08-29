@@ -5,8 +5,8 @@ const userModel= require("../models/userModel")
    //2 
     const basicCode= async function(req, res) {
      let createUser=req.body
-    //  let request = req.headers.isfreeappuser;
-    //  req.body.isFreeAppUser = req.headers["isfreeappuser"];
+     let request = req.headers.isfreeappuser;
+     req.body.isFreeAppUser = req.headers["isfreeappuser"];
      const create=await userModel.create(createUser)
      res.send({msg: create})
 
