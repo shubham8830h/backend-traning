@@ -1,20 +1,27 @@
+
 const blogsModel = require("../model/blogsmodel");
 let authorModel = require("../model/authormodel");
-const { all } = require("../routes/route");
+
+
+
+//============================================= Blog create ======================================================//
+
 
 const createBlog = async function (req, res) {
   try {
     let blogs = req.body;
     let condition = await authorModel.findById(blogs.authorId);
     if (condition) {
-      if (blogs.isPublished == true) {
+      if (blogs.isPublished == true) {            
         blogs.publishedAt = Date.now();
         let savedData = await blogsModel.create(blogs);
         res.status(201).send({ data: savedData });
-      } else {
+      } else if(blogs.isPublished==false){
+        blogs.publishedAt=null;
         let savedData = await blogsModel.create(blogs);
         res.status(201).send({ data: savedData });
       }
+
     } else {
       res.status(400).send({ status: false, msg: "authorId is not present" });
     }
@@ -22,6 +29,11 @@ const createBlog = async function (req, res) {
     res.status(500).send({ msg: "error", error: err.message });
   }
 };
+
+
+//========================================= Get blogs ============================================================//
+
+
 
 const getAllBlogs = async (req, res) => {
   try {
@@ -37,6 +49,10 @@ const getAllBlogs = async (req, res) => {
     res.status(500).send({ staus: false, error: err.message });
   }
 };
+
+
+//============================================== Update Blogs =====================================================//
+
 
 const updatedBlogsData = async function (req, res) {
   let getId = req.params.blogId;
@@ -64,6 +80,11 @@ const updatedBlogsData = async function (req, res) {
   }
 };
 
+
+//=========================================== Delete by params ========================================================//
+
+
+
 const deletedByParams = async function (req, res) {
   try {
     let blogid = req.params.blogId;
@@ -90,30 +111,44 @@ const deletedByParams = async function (req, res) {
   }
 };
 
-const deletedByQuray = async (req, res) => {
-  try {
-    let data = req.query;
-    let allBlogs = await blogsModel.findOne(data);
-    if (!allBlogs) {
-      res.status(400).send({ status: false, msg: "invalid user id" });
+
+//=========================================== Delete By query ========================================================//
+
+
+  
+ const deleteByQuery = async (req, res) => {
+   try {
+     let data = req.query;
+     let allBlogs = await blogsModel.find(data);
+    if (allBlogs.length == 0) {
+      return res.status(400).send({ status: false, msg: "No blog found" });
     }
-    if (allBlogs.isDeleted === false) {
-      let deletedData = await blogsModel.updateMany(
-        { isDeleted: false },
-        { $set: { isDeleted: true, deletedAt: Date.now() } },
-        { new: true }
+      
+       let deletedData = await blogsModel.updateMany(
+         { isDeleted: false },
+         { $set: { isDeleted: true, deletedAt: Date.now() } },
+         { new: true }
       );
-      res.status(200).send({ status: true, msg: deletedData });
-    } else {
-      res.status(404).send({ status: false, msg: "user is already deleted" });
-    }
+  if (deletedData.modifiedCount == 0) return res.status(404).send({ status: false, msg: "No Such BLog Or the blog already is Deleted" });
+      
+     res.status(200).send({ status: true, msg: deletedData });
+
+      
   } catch (err) {
     res.status(500).send({ status: false, error: err.message });
   }
 };
 
+
+//========================================= module exports ========================================================//
+
+
 module.exports.createBlog = createBlog;
+
 module.exports.getAllBlogs = getAllBlogs;
+
 module.exports.updatedBlogsData = updatedBlogsData;
+
 module.exports.deletedByParams = deletedByParams;
-module.exports.deletedByQuray = deletedByQuray;
+
+module.exports.deleteByQuery = deleteByQuery;

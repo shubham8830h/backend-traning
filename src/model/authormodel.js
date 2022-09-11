@@ -2,16 +2,28 @@
 const mongoose = require('mongoose');
 const validator=require("validator")
 
+
+
 const authorSchema = new mongoose.Schema({
     fname: {
         type: String,
         required: true,
-        trim:true
+        trim:true,
+        validate(value){
+            if(!validator.isAlpha(value)) {
+                throw new Error("fname is invalid");
+            }
+        }
     },
     lname: {
         type: String,
         required: true,
-        trim:true
+        trim:true,
+        validate(value){
+            if(!validator.isAlpha(value)) {
+                throw new Error("lname is invalid");
+            }
+        }
     },
     title: {
         type: String,
@@ -36,6 +48,7 @@ const authorSchema = new mongoose.Schema({
 
     }
 }, { timestamps: true })
+
 
 module.exports = mongoose.model('author', authorSchema)
 

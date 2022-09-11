@@ -1,5 +1,11 @@
 const authorModel = require("../model/authormodel");
+
 const jwt = require("jsonwebtoken");
+
+
+
+//========================================= Author Create ========================================================//
+
 
 const createAuthor = async function (req, res) {
   try {
@@ -12,6 +18,10 @@ const createAuthor = async function (req, res) {
     res.status(500).send({ status: false, error: err.message });
   }
 };
+
+
+//========================================== Login author ======================================================================//
+
 
 const authorLogin = async (req, res) => {
   try {
@@ -26,9 +36,10 @@ const authorLogin = async (req, res) => {
         .status(400)
         .send({ status: false, msg: "Please signup first" });
     }
+    // token create :-
     let token = jwt.sign(
       {
-        userId: authorDeatails._id.toString(),
+        userId: authorDeatails._id,
         Batch: "plutonium",
         Project1: "Group26",
       },
@@ -40,5 +51,9 @@ const authorLogin = async (req, res) => {
   }
 };
 
+
+//=========================================== export the module ===================================================//
+
 module.exports.createAuthor = createAuthor;
+
 module.exports.authorLogin = authorLogin;
