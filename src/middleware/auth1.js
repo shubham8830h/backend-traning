@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
  const authentication = async (req, res, next) => {
     try {
-      let validToken = req.headers["x-auth-token"];
+      let validToken = req.headers["x-api-key"];
       if (!validToken) {
         res.status(400).send({ status: false, msg: "invalid token" });
       }

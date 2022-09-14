@@ -3,7 +3,7 @@ const blogsModel = require("../model/blogsmodel");
 
 const authorization = async (req, res, next) => {
   try {
-    let token = req.headers["x-auth-token"];
+    let token = req.headers["x-api-key"];
     let decodedToken = jwt.verify(token, "secret key");
     if (!decodedToken) {
       res.status(400).send({ status: false, msg: "invalid user" });

@@ -2,10 +2,7 @@ const authorModel = require("../model/authormodel");
 
 const jwt = require("jsonwebtoken");
 
-
-
 //========================================= Author Create ========================================================//
-
 
 const createAuthor = async function (req, res) {
   try {
@@ -19,9 +16,7 @@ const createAuthor = async function (req, res) {
   }
 };
 
-
 //========================================== Login author ======================================================================//
-
 
 const authorLogin = async (req, res) => {
   try {
@@ -50,7 +45,6 @@ const authorLogin = async (req, res) => {
     res.status(500).send({ status: false, error: err.message });
   }
 };
-
 
 //=========================================== export the module ===================================================//
 
