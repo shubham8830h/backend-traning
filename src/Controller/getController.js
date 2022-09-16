@@ -2,8 +2,7 @@ const collegeModel = require("../Model/collegeModel")
 const interModel = require("../Model/InternModel")
 
   
-  
-  const isValidRequest = function (object) {
+ const isValidRequest = function (object) {
     return Object.keys(object).length > 0
 };
   
@@ -31,7 +30,7 @@ const getcollegeDetails= async function(req,res){
         result.interns = interns
 
         if(Object.keys(interns).length == 0 ){
-        return res.status(400).send({status:true, msg:"no interns applied for this college"})
+        return res.status(400).send({status:false, msg:"no interns applied for this college"})
     }
       return res.status(200).send({status:true,data:result})
 

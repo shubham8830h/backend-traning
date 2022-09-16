@@ -17,7 +17,8 @@ const isValidRequest = function (object) {
 const createinterns = async function (req, res) {
   try {
     const nameregex = /^[a-zA-Z , ]*$/
-    const emailregex = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/
+    const emailregex = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/
+
     const mobileregex = /^([6-9]\d{9})$/
     let reqquery = req.query
     if (isValidRequest(reqquery)) return res.status(400).send({ status: false, msg: "invalidRequest" })
