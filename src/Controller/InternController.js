@@ -61,7 +61,7 @@ const createinterns = async function (req, res) {
     let checkName = await collegeModel.findOne({ name: interdata.collegeName })
     if (!checkName) return res.status(404).send({ status: false, msg: "college not found" })
     // 
-    id = checkName._id
+   let id = checkName._id
     // 
     let create = {}
     create.name = interdata.name
