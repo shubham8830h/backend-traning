@@ -6,11 +6,14 @@ const app = express()
 
 app.use(bodyParser.json())
 
-mongoose.connect('mongodb+srv://payal-chaudhary:BDoIPGJ3FjU4qpys@cluster0.jjm7nst.mongodb.net/Group35-Database',
-{useNewUrlParser : true})
+mongoose
+  .connect(
+    "mongodb+srv://payal-chaudhary:BDoIPGJ3FjU4qpys@cluster0.jjm7nst.mongodb.net/Group35-Database",
+    { useNewUrlParser: true }
+  )
 
-.then(() => console.log('MongoDb is connected'))
-.catch(() => console.log(err))
+  .then(() => console.log("MongoDb is connected"))
+  .catch((err) => console.log(err));
 
 app.use(route)
 
