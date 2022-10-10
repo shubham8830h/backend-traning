@@ -10,13 +10,13 @@ app.use(bodyParser.json());
 app.use( multer().any())
 
 
-mongoose.connect("mongodb+srv://rakib123:rakib1234@cluster0.bwxs7wf.mongodb.net/group68Database", {
+mongoose.connect("mongodb+srv://rakib123:rakib1234@cluster0.bwxs7wf.mongodb.net/group25Database", {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
 .catch ( err => console.log(err) )
 
-
+ 
  app.use('/', route);
 
 
