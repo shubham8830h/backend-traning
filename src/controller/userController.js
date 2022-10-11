@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt")
 const userModel = require('../model/userModel')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
+const aws =  require("../middleware/aws")
 const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage } = require("../validation/validator")
 
 
@@ -11,7 +12,7 @@ const createUser = async (req, res) => {
         let { fname, lname, email, profileImage, phone, password, address } = req.body
 
         if (Object.keys(data).length == 0)
-            return res.status(404).send({ status: false, message: "provide the data" })
+            return res.status(400).send({ status: false, message: "provide the All data" })
 
         //validation for fname
 
@@ -43,6 +44,30 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status: false, message: "email already exists" })
         }
 
+        //validation for profileImage
+        
+        let files= req.files
+        if(files && files.length>0){
+            //upload to s3 and get the uploaded link
+            // res.send the link back to frontend/postman
+           
+        // profileImage.files = req.body
+        if(!profileImage.files){
+             return res.status(400).send({ status: false, message: "please provide the profileImage file" })
+        }
+        if (!isValid(profileImage.files)) {
+            return res.status(400).send({ status: false, message: "provide the profileImage" })
+        }
+        if (!isValidImage(profileImage.files)) {
+            return res.status(400).send({ status: false, message: "provide the valid profileImage url" })
+        }
+        let uploadedFileURL= await uploadFile( files[0] )
+        res.status(201).send({msg: "file uploaded succesfully", data: uploadedFileURL})
+    }
+    else{
+        res.status(400).send({ msg: "No file found" })
+    }
+        
         //validation for phone
 
         if (!isValid(phone)) {
@@ -107,16 +132,8 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status: false, message: "please enter valid pin " })
 
 
-        //  valodation for profileImage
-
-        if (!isValid(profileImage)) {
-            return res.status(400).send({ status: false, message: "provide the profileImage" })
-        }
-        if (!isValidImage(profileImage)) {
-            return res.status(400).send({ status: false, message: "provide the valid profileImage url" })
-        }
-        //  ye sahi nahi hai mujhe samaj nahi aaraha hai ye profileImage wala kal dekhte hai
-
+       
+        
         const saveData = await userModel.create(req.body)
         return res.status(201).send({ status: true, message: "Success", data: saveData })
 

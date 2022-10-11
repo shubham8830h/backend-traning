@@ -67,4 +67,4 @@ const isValidImage = function (value) {
 
     return Regex.test(value);
 }
-module.exports = { isValid, validTitle, isValidEmail, isValidPhone, isValidName, isvalidTitle, isValidPassword, isvalidObjectId, isValidISBN, isValidPinCode, isValidDate, isValidMixed, isValidRating, isValidBody,isValidImage};
+module.exports = { isValid, validTitle, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidISBN, isValidPinCode, isValidDate, isValidMixed, isValidRating, isValidBody,isValidImage};
