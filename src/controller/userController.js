@@ -2,14 +2,28 @@ const bcrypt = require("bcrypt")
 const userModel = require('../model/userModel')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
-const aws =  require("../middleware/aws")
-const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage } = require("../validation/validator")
+// const aws = require("../middleware/aws")
+const uploadFile = require("../middleware/aws")
+const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage,isvalidObjectId } = require("../validation/validator")
+const aws = require('aws-sdk');
+const { fn } = require("moment")
+
+aws.config.update({
+    accessKeyId: "AKIAY3L35MCRZNIRGT6N",
+    secretAccessKey: "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",
+    region: "ap-south-1"
+})
 
 
 const createUser = async (req, res) => {
     try {
         let data = req.body
-        let { fname, lname, email, profileImage, phone, password, address } = req.body
+       
+        let { fname, lname, email, phone, password, address } = req.body
+        // let shipping = req.body.address
+        // let billing = req.body.address
+        let profileImage = req.files
+
 
         if (Object.keys(data).length == 0)
             return res.status(400).send({ status: false, message: "provide the All data" })
@@ -45,29 +59,43 @@ const createUser = async (req, res) => {
         }
 
         //validation for profileImage
-        
-        let files= req.files
-        if(files && files.length>0){
-            //upload to s3 and get the uploaded link
-            // res.send the link back to frontend/postman
-           
-        // profileImage.files = req.body
-        if(!profileImage.files){
-             return res.status(400).send({ status: false, message: "please provide the profileImage file" })
+        if (profileImage) {
+            //if (!isValidImage(profileImage)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
+            let uploadFile = async (file) => {
+                return new Promise(function (resolve, reject) {
+                    // this function will upload file to aws and return the link
+                    let s3 = new aws.S3({ apiVersion: '2006-03-01' }); // we will be using the s3 service of aws
+
+                    var uploadParams = {
+                        ACL: "public-read",
+                        Bucket: "classroom-training-bucket",  //HERE
+                        Key: "abc/" + file.originalname, //HERE 
+                        Body: file.buffer
+                    }
+                    s3.upload(uploadParams, function (err, data) {
+                        if (err) {
+                            return reject({ "error": err })
+                        }
+                        console.log(data)
+                        console.log("file uploaded succesfully")
+                        return resolve(data.Location)
+                    })
+                })
+            }
+            let files = req.files;
+            if (files && files.length > 0) {
+                let uploadedFileURL = await uploadFile(files[0]);
+
+                profileImage = uploadedFileURL;
+                console.log(profileImage)
+            } else {
+                return res.status(400).send({ message: "No file found" });
+            }
         }
-        if (!isValid(profileImage.files)) {
-            return res.status(400).send({ status: false, message: "provide the profileImage" })
-        }
-        if (!isValidImage(profileImage.files)) {
-            return res.status(400).send({ status: false, message: "provide the valid profileImage url" })
-        }
-        let uploadedFileURL= await uploadFile( files[0] )
-        res.status(201).send({msg: "file uploaded succesfully", data: uploadedFileURL})
-    }
-    else{
-        res.status(400).send({ msg: "No file found" })
-    }
-        
+        else { return res.status(400).send({ status: false, message: "Please provide profileimage" }) }
+
+
+
         //validation for phone
 
         if (!isValid(phone)) {
@@ -91,50 +119,57 @@ const createUser = async (req, res) => {
         const encryptedPassword = await bcrypt.hash(password, 15); //encrypting the Password
         req.body.password = encryptedPassword;
 
-        // validation for address
-        if (req.body.address)
-            req.body.address = JSON.parse(address)
-        let { shipping, billing } = req.body.address
+        if (address) {
+            // console.log(address)
+            address = JSON.parse(address)
+            if (address.shipping) {
+                if (!isValid(address.shipping.street))
+                    return res.status(400).send({ status: false, message: "please enter shipping street address" })
+                if (!isValidMixed(address.shipping.street))
+                    return res.status(400).send({ status: false, message: "please enter valid shipping street address" })
+                if (!isValid(address.shipping.city))
+                    return res.status(400).send({ status: false, message: "please enter shipping city address" })
+                if (!isValidMixed(address.shipping.city))
+                    return res.status(400).send({ status: false, message: "please enter valid  shipping city address" })
+                if (!isValid(address.shipping.pincode))
+                    return res.status(400).send({ status: false, message: "please enter shipping pin " })
+                if (!isValidPinCode(address.shipping.pincode))
+                    return res.status(400).send({ status: false, message: "please enter valid shipping pin" })
 
-        if (!shipping) {
-            return res.status(400).send({ status: false, message: "Please enter shipping address" })
+            }
+            else { return res.status(400).send({ status: false, message: "Please enter shipping address" }) }
+
+
+            if (address.billing) {
+                if (!isValid(address.billing.street))
+                    return res.status(400).send({ status: false, message: "please enter   billing street address" })
+                if (!isValidMixed(address.billing.street))
+                    return res.status(400).send({ status: false, message: "please enter valid billing street address" })
+                if (!isValid(address.billing.city))
+                    return res.status(400).send({ status: false, message: "please enter  billing city address" })
+                if (!isValidMixed(address.billing.city))
+                    return res.status(400).send({ status: false, message: "please enter valid billing city address" })
+                if (!isValid(address.billing.pincode))
+                    return res.status(400).send({ status: false, message: "please enter  billing pin " })
+                if (!isValidPinCode(address.billing.pincode))
+                    return res.status(400).send({ status: false, message: "please enter billing valid pin" })
+
+            }
+            else { return res.status(400).send({ status: false, message: "Please enter billing address" }) }
         }
-        if (!isValid(shipping.street) || !isValidMixed(shipping.street))
-            return res.status(400).send({ status: false, message: "please enter valid street address" })
+        else { return res.status(400).send({ status: false, message: "Please enter address" }) }
 
-        // if(!isValidMixed(shipping.street))
-        //     return res.status(400).send({status:false , message:"provide the valid street"})
-        // }else{
-        //     return res.status(400).send({status:false , message:"Please enter shipping address"});
-        // }
-
-        if (!isValid(shipping.city) || !isValidMixed(shipping.city))
-            return res.status(400).send({ status: false, message: "please enter valid city address" })
-        // }else{
-        //     return res.status(400).send({status:false , message:"Please enter city address"});
-        // }
-        if (!isValid(shipping.pin) || !isValidPinCode(shipping.pin))
-            return res.status(400).send({ status: false, message: "please enter valid pin " })
-        // }else{
-        //     return res.status(400).send({status:false , message:"Please enter pin "});
-        // }
-        //valodation for address.billing
-        if (!billing) {
-            return res.status(400).send({ status: false, message: "Please enter billing address" })
-        }
-        if (!isValid(billing.street) || !isValidMixed(billing.street))
-            return res.status(400).send({ status: false, message: "please enter valid street address" })
-
-        if (!isValid(billing.city) || !isValidMixed(billing.city))
-            return res.status(400).send({ status: false, message: "please enter valid city address" })
-
-        if (!isValid(billing.pin) || !isValidPinCode(billing.pin))
-            return res.status(400).send({ status: false, message: "please enter valid pin " })
-
-
-       
-        
-        const saveData = await userModel.create(req.body)
+        const newData = {
+            fname: fname,
+            lname: lname,
+            email: email,
+            profileImage: profileImage,
+            phone: phone,
+            password: password,
+            address: address,
+        };
+        const saveData = await userModel.create(newData)
+        console.log(saveData)
         return res.status(201).send({ status: true, message: "Success", data: saveData })
 
     } catch (err) { console.log(err) }
@@ -143,14 +178,21 @@ const createUser = async (req, res) => {
 
 const userlogin = async function (req, res) {
     try {
-        let emailId = req.email
-        let password = req.password
+        // let emailId = req.body.email
+        // let password = req.body.password
+        let data = req.body
+        let { emailId, password } = data
 
         if (!isValid(emailId)) return res.status(400).send({ status: false, message: "Please enter  emailId" })
-        if (!validemail(emailId)) return res.status(400).send({ status: false, message: "Please enter valid emailId" })
+        if (!isValidEmail(emailId)) return res.status(400).send({ status: false, message: "Please enter valid emailId" })
 
         if (!isValid(password)) return res.status(400).send({ status: false, message: "Please enter password" })
-        if (!validPassword(password)) return res.status(400).send({ status: false, message: "Please enter valid password" })
+        if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Please enter valid password" })
+        // bcrypt.compare(password, hash, function(err, result) {
+        //     if (err) {
+        //        return res.status(400).send({status:false, message:"password is not match"})
+        //    }
+        // });
 
         let userin = await userModel.findOne({ email: emailId, password: password })
         if (!userin) return res.status(404).send({ status: false, message: "Please enter correct emailId and Password" })
@@ -164,7 +206,7 @@ const userlogin = async function (req, res) {
             "Secretekeygroup25"
         )
         res.setHeader("x-auth-key", token)
-        return res.status(201).send({ status: true, message: "Login Successfully", data: token })
+        return res.status(201).send({ status: true, message: "Login Successfully", userId: userin._id, data: token })
     }
     catch (err) {
         return res.status(500).send({ message: err })
@@ -174,10 +216,10 @@ const userlogin = async function (req, res) {
 const getuserprofile = async function (req, res) {
     try {
         let userId = req.params.userId
-        if (!isValid(userId)) return res.status(400).send({ status: false, message: "Please enter userId in pathparam" })
-        if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter valid userId" })
-
-        let userindb = await userModel.findById({ userId })
+        if(!userId) return res.status(400).send({status:false, message:"Please enter userId in path param"})
+        if (!isvalidObjectId(userId)) {return res.status(400).send({ status: false, message: "Please enter valid userId" })}
+        console.log(userId)
+        let userindb = await userModel.findOne({ _id: userId })
         if (!userindb) return res.status(404).send({ status: false, message: "NO user found" })
 
         return res.status(200).send({ status: true, message: "Users Profile", data: userindb })
@@ -190,14 +232,127 @@ const getuserprofile = async function (req, res) {
 const updateprofile = async function (req, res) {
     try {
         let userId = req.params.userId
-        if (!isValid(userId)) return res.status(400).send({ status: false, message: "Please enter userId in pathparam" })
-        if (!isValidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter valid userId" })
+        if(!userId) return res.status(400).send({status:false, message:"Please enter userId in path param"})
+        if (!isvalidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter valid userId" })
+        let body = req.body
+        let { fname, lname, email, phone, password, address } = body
+        console.log(body)
+        // let shipping = req.body.address
+        // let billing = req.body.address
+        let profileImage = req.files
+        if (Object.keys(data).length === 0) {
+            return res.status(400).send({ status: false, message: "Please enter required details in request body" })
+        } 
+        let updations ={}
+        console.log(updations)
 
+        if(fname){
+            if(!isValid(fname)) return res.status(400).send({status:false, message:"Please enter fname"})
+            if(!isValidName(fname)) return res.status(400).send({status:false, message:"Please enter valid fname"})
+            updations.fname = fname
+        }
+        if(lname){
+            if(!isValid(lname)) return res.status(400).send({status:false, message:"Please enter lname"})
+            if(!isValidName(lname)) return res.status(400).send({status:false, message:"Please enter valid lname"})
+            updations.lname = lname
+        }
+        if(email){
+            if(!isValid(email)) return res.status(400).send({status:false, message:"Please enter email"})
+            if(!isValidEmail(email)) return res.status(400).send({status:false, message:"Please enter valid email"})
+            updations.email = email
+        }
+        if(phone){
+            if(!isValid(phone)) return res.status(400).send({status:false, message:"Please enter phone"})
+            if(!isValidPhone(phone)) return res.status(400).send({status:false, message:"Please enter valid phone"})
+            updations.phone = phone
+        }
+        if(password){
+            if(!isValid(password)) return res.status(400).send({status:false, message:"Please enter password"})
+            if(!isValidName(password)) return res.status(400).send({status:false, message:"Please enter valid password"})
+            const encryptedPassword = await bcrypt.hash(password, 15); //encrypting the Password
+            req.body.password = encryptedPassword;
+            updations.password = password
+        }
+        
+        if (profileImage) {
+            //if (!isValidImage(profileImage)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
+            let uploadFile = async (file) => {
+                return new Promise(function (resolve, reject) {
+                    // this function will upload file to aws and return the link
+                    let s3 = new aws.S3({ apiVersion: '2006-03-01' }); // we will be using the s3 service of aws
+
+                    var uploadParams = {
+                        ACL: "public-read",
+                        Bucket: "classroom-training-bucket",  //HERE
+                        Key: "abc/" + file.originalname, //HERE 
+                        Body: file.buffer
+                    }
+                    s3.upload(uploadParams, function (err, data) {
+                        if (err) {
+                            return reject({ "error": err })
+                        }
+                        console.log(data)
+                        console.log("file uploaded succesfully")
+                        return resolve(data.Location)
+                    })
+                })
+            }
+            let files = req.files;
+            if (files && files.length > 0) {
+                let uploadedFileURL = await uploadFile(files[0]);
+
+                profileImage = uploadedFileURL;
+                updations.profileImage = profileImage
+            } else {
+                return res.status(400).send({ message: "No file found" });
+            }
+        }
+        if (address) {
+            // console.log(address)
+            address = JSON.parse(address)
+            if (address.shipping) {
+                if (!isValid(address.shipping.street))
+                    return res.status(400).send({ status: false, message: "please enter shipping street address" })
+                if (!isValidMixed(address.shipping.street))
+                    return res.status(400).send({ status: false, message: "please enter valid shipping street address" })
+                if (!isValid(address.shipping.city))
+                    return res.status(400).send({ status: false, message: "please enter shipping city address" })
+                if (!isValidMixed(address.shipping.city))
+                    return res.status(400).send({ status: false, message: "please enter valid  shipping city address" })
+                if (!isValid(address.shipping.pincode))
+                    return res.status(400).send({ status: false, message: "please enter shipping pin " })
+                if (!isValidPinCode(address.shipping.pincode))
+                    return res.status(400).send({ status: false, message: "please enter valid shipping pin" })
+
+            }
+            if (address.billing) {
+                if (!isValid(address.billing.street))
+                    return res.status(400).send({ status: false, message: "please enter   billing street address" })
+                if (!isValidMixed(address.billing.street))
+                    return res.status(400).send({ status: false, message: "please enter valid billing street address" })
+                if (!isValid(address.billing.city))
+                    return res.status(400).send({ status: false, message: "please enter  billing city address" })
+                if (!isValidMixed(address.billing.city))
+                    return res.status(400).send({ status: false, message: "please enter valid billing city address" })
+                if (!isValid(address.billing.pincode))
+                    return res.status(400).send({ status: false, message: "please enter  billing pin " })
+                if (!isValidPinCode(address.billing.pincode))
+                    return res.status(400).send({ status: false, message: "please enter billing valid pin" })
+
+            }
+            updations.address = address
+        }
+       
+        let updatedData = await userModel.findByIdAndUpdate({_id:userId},{$set:updations,new:true})
+        console.log(updatedData)
+        if(!updatedData) return res.status(404).send({status:false, message:"No User found "})
+        return res.status(201).send({status:true, message:"updated successfully",data:updatedData})
+       
     }
     catch (err) {
         return res.status(500).send({ message: err })
     }
 }
 
-module.exports = { createUser,userlogin, getuserprofile, updateprofile }
+module.exports = { createUser, userlogin, getuserprofile, updateprofile }
 

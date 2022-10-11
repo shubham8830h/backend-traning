@@ -34,10 +34,7 @@ const isValidISBN = function (value) {
     const Regex = /^(?:ISBN(?:-13)?:? )?(?=[0-9]{13}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)97[89][- ]?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9]$/
     return Regex.test(value);
 }
-const validTitle = function (value) {
-    const regex = /^[A-Za-z0-9\s\-_,\.:;()]+$/
-    return regex.test(value)
-};
+
 const isValidPinCode = function (pincode) {
     const Regex = /^[0-9]{6}$/
     return Regex.test(pincode);
@@ -48,7 +45,8 @@ const isValidDate = function (date) {
     return Regex.test(date)
 }
 const isValidMixed = function (value) {
-    const regex = /(?<![0-9]\S{0,100})[^a-zA-Z](?!\S{0,100}[0-9])|(?<=[0-9]\S{0,100})[^a-zA-Z0-9-](?=\S{0,100}[0-9])/
+    //  const regex = /(?<![0-9]\S{0,100})[^a-zA-Z](?!\S{0,100}[0-9])|(?<=[0-9]\S{0,100})[^a-zA-Z0-9-](?=\S{0,100}[0-9])/
+    const regex = /^([a-zA-Z]+|[a-zA-Z]+\s[a-zA-Z]+)$/
 
     return regex.test(value)
 }
@@ -67,4 +65,4 @@ const isValidImage = function (value) {
 
     return Regex.test(value);
 }
-module.exports = { isValid, validTitle, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidISBN, isValidPinCode, isValidDate, isValidMixed, isValidRating, isValidBody,isValidImage};
+module.exports = { isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidISBN, isValidPinCode, isValidDate, isValidMixed, isValidRating, isValidBody,isValidImage};
