@@ -235,14 +235,15 @@ const updateprofile = async function (req, res) {
         if(!userId) return res.status(400).send({status:false, message:"Please enter userId in path param"})
         if (!isvalidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter valid userId" })
         let body = req.body
+        if (Object.keys(body).length === 0) {
+            return res.status(400).send({ status: false, message: "Please enter required details in request body" })
+        } 
         let { fname, lname, email, phone, password, address } = body
         console.log(body)
         // let shipping = req.body.address
         // let billing = req.body.address
         let profileImage = req.files
-        if (Object.keys(data).length === 0) {
-            return res.status(400).send({ status: false, message: "Please enter required details in request body" })
-        } 
+        
         let updations ={}
         console.log(updations)
 
@@ -303,9 +304,7 @@ const updateprofile = async function (req, res) {
 
                 profileImage = uploadedFileURL;
                 updations.profileImage = profileImage
-            } else {
-                return res.status(400).send({ message: "No file found" });
-            }
+            } 
         }
         if (address) {
             // console.log(address)
@@ -343,7 +342,7 @@ const updateprofile = async function (req, res) {
             updations.address = address
         }
        
-        let updatedData = await userModel.findByIdAndUpdate({_id:userId},{$set:updations,new:true})
+        let updatedData = await userModel.findByIdAndUpdate({_id:userId},{$set:updations},{new:true})
         console.log(updatedData)
         if(!updatedData) return res.status(404).send({status:false, message:"No User found "})
         return res.status(201).send({status:true, message:"updated successfully",data:updatedData})
