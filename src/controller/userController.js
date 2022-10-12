@@ -3,7 +3,7 @@ const userModel = require('../model/userModel')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
 // const aws = require("../middleware/aws")
-const uploadFile = require("../middleware/aws")
+// const uploadFile = require("../middleware/aws")
 const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage,isvalidObjectId } = require("../validation/validator")
 const aws = require('aws-sdk');
 const { fn } = require("moment")
@@ -235,17 +235,19 @@ const updateprofile = async function (req, res) {
         if(!userId) return res.status(400).send({status:false, message:"Please enter userId in path param"})
         if (!isvalidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter valid userId" })
         let body = req.body
-        if (Object.keys(body).length === 0) {
-            return res.status(400).send({ status: false, message: "Please enter required details in request body" })
+        let profileImage = req.files
+        if ((Object.keys(body).length === 0)&&(!profileImage)) {
+            return res.status(400).send({ status: false, message: "Please enter updations details" })
         } 
-        let { fname, lname, email, phone, password, address } = body
-        console.log(body)
+        // if(!(body || profileImage))  return res.status(400).send({ status: false, message: "Please enter updations details" })
+        let { fname, lname, email, phone,password, address } = body
+        // console.log(body)
         // let shipping = req.body.address
         // let billing = req.body.address
-        let profileImage = req.files
+        
         
         let updations ={}
-        console.log(updations)
+        // console.log(updations)
 
         if(fname){
             if(!isValid(fname)) return res.status(400).send({status:false, message:"Please enter fname"})
@@ -269,14 +271,14 @@ const updateprofile = async function (req, res) {
         }
         if(password){
             if(!isValid(password)) return res.status(400).send({status:false, message:"Please enter password"})
-            if(!isValidName(password)) return res.status(400).send({status:false, message:"Please enter valid password"})
+            if(!isValidPassword(password)) return res.status(400).send({status:false, message:"Please enter valid password"})
             const encryptedPassword = await bcrypt.hash(password, 15); //encrypting the Password
             req.body.password = encryptedPassword;
             updations.password = password
         }
         
         if (profileImage) {
-            //if (!isValidImage(profileImage)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
+            // if (!isValidImage(profileImage)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
             let uploadFile = async (file) => {
                 return new Promise(function (resolve, reject) {
                     // this function will upload file to aws and return the link

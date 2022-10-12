@@ -61,8 +61,8 @@ const isValidBody = function (value) {
 }
 
 const isValidImage = function (value) {
-    const Regex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/
-
+    // const Regex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/
+    const Regex = "(.*/)*.+\\.(png|jpg|gif|bmp|jpeg|PNG|JPG|GIF|BMP|JPEG)$"
     return Regex.test(value);
 }
 module.exports = { isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidISBN, isValidPinCode, isValidDate, isValidMixed, isValidRating, isValidBody,isValidImage};
