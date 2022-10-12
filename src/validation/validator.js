@@ -36,7 +36,7 @@ const isValidISBN = function (value) {
 }
 
 const isValidPinCode = function (pincode) {
-    const Regex = /^[0-9]{6}$/
+    const Regex = /^[1-9]{1}[0-9]{5}$/   //055555     55555
     return Regex.test(pincode);
 }
 const isValidDate = function (date) {

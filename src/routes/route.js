@@ -2,12 +2,13 @@ const express = require('express')
 const router = express.Router()
 const userController = require('../controller/userController')
 const aws =  require("../middleware/aws")
+const {authentication} = require("../middleware/middleware")
 
 
 
 router.post('/register',userController.createUser)
 router.post('/login',userController.userlogin)
-router.get('/user/:userId/profile' , userController.getuserprofile)
+router.get('/user/:userId/profile' ,authentication, userController.getuserprofile)
 router.put('/user/:userId/profile',userController.updateprofile)
     
 

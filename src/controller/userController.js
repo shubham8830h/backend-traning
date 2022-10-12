@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken')
 const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage,isvalidObjectId } = require("../validation/validator")
 const aws = require('aws-sdk');
 const { fn } = require("moment")
+const { authentication } = require("../middleware/middleware")
 
 aws.config.update({
     accessKeyId: "AKIAY3L35MCRZNIRGT6N",
@@ -205,7 +206,9 @@ const userlogin = async function (req, res) {
             },
             "Secretekeygroup25"
         )
-        res.setHeader("x-auth-key", token)
+        // res.setHeader("x-auth-key", token)
+        // ("authenticate", token)
+        res.setheader("Authorization",token)
         return res.status(201).send({ status: true, message: "Login Successfully", userId: userin._id, data: token })
     }
     catch (err) {
