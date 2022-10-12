@@ -7,19 +7,28 @@ const {isvalidObjectId} = require('../validation/validator')
 const authentication = async function(req,res,next)
 {
     try{
-        let token = req.headers("Authorization")
+        let token = req.header("Authorization")
         console.log(token)
         if(!token)  return res.status(401).send({ status: false, message: "Please enter Token" })
-        let decodetoken = jwt.verify(token, "Secretekeygroup25")
-        if(!decodetoken)  return res.status(401).send({ status: false, message: "Invalide token" })
+        const bearer = token.split(' ')
+        const bearerToken = bearer[1]
+        jwt.verify(bearerToken, "Secretekeygroup25", (err,decodetoken)=>{
+        // console.log(decodetoken)
+        if(err)  {return res.status(401).send({ status: false, message: err.message })
+        }else{
         req.decodetoken = decodetoken
         next()
+        }
+        })
     }
-    catch(err)
+  catch(err)
     {
         return res.status(500).send({status:false, message:err})
     }
 }
+
+
+
 
 
 

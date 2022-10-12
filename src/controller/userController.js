@@ -3,7 +3,7 @@ const userModel = require('../model/userModel')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
 // const aws = require("../middleware/aws")
-// const uploadFile = require("../middleware/aws")
+const {uploadFile}= require("../middleware/aws")
 const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage,isvalidObjectId } = require("../validation/validator")
 const aws = require('aws-sdk');
 const { fn } = require("moment")
@@ -62,27 +62,6 @@ const createUser = async (req, res) => {
         //validation for profileImage
         if (profileImage) {
             //if (!isValidImage(profileImage)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
-            let uploadFile = async (file) => {
-                return new Promise(function (resolve, reject) {
-                    // this function will upload file to aws and return the link
-                    let s3 = new aws.S3({ apiVersion: '2006-03-01' }); // we will be using the s3 service of aws
-
-                    var uploadParams = {
-                        ACL: "public-read",
-                        Bucket: "classroom-training-bucket",  //HERE
-                        Key: "abc/" + file.originalname, //HERE 
-                        Body: file.buffer
-                    }
-                    s3.upload(uploadParams, function (err, data) {
-                        if (err) {
-                            return reject({ "error": err })
-                        }
-                        console.log(data)
-                        console.log("file uploaded succesfully")
-                        return resolve(data.Location)
-                    })
-                })
-            }
             let files = req.files;
             if (files && files.length > 0) {
                 let uploadedFileURL = await uploadFile(files[0]);
@@ -189,11 +168,8 @@ const userlogin = async function (req, res) {
 
         if (!isValid(password)) return res.status(400).send({ status: false, message: "Please enter password" })
         if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Please enter valid password" })
-        // bcrypt.compare(password, hash, function(err, result) {
-        //     if (err) {
-        //        return res.status(400).send({status:false, message:"password is not match"})
-        //    }
-        // });
+        let hpassword = await bcrypt.compare(password,user.password)
+        if(hpassword==false)return res.status(400).send({status:false,message:"Please enter your correct password"})
 
         let userin = await userModel.findOne({ email: emailId, password: password })
         if (!userin) return res.status(404).send({ status: false, message: "Please enter correct emailId and Password" })
@@ -281,35 +257,16 @@ const updateprofile = async function (req, res) {
         }
         
         if (profileImage) {
-            // if (!isValidImage(profileImage)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
-            let uploadFile = async (file) => {
-                return new Promise(function (resolve, reject) {
-                    // this function will upload file to aws and return the link
-                    let s3 = new aws.S3({ apiVersion: '2006-03-01' }); // we will be using the s3 service of aws
-
-                    var uploadParams = {
-                        ACL: "public-read",
-                        Bucket: "classroom-training-bucket",  //HERE
-                        Key: "abc/" + file.originalname, //HERE 
-                        Body: file.buffer
-                    }
-                    s3.upload(uploadParams, function (err, data) {
-                        if (err) {
-                            return reject({ "error": err })
-                        }
-                        console.log(data)
-                        console.log("file uploaded succesfully")
-                        return resolve(data.Location)
-                    })
-                })
-            }
+            //if (!isValidImage(profileImage)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
             let files = req.files;
             if (files && files.length > 0) {
                 let uploadedFileURL = await uploadFile(files[0]);
 
                 profileImage = uploadedFileURL;
-                updations.profileImage = profileImage
-            } 
+                console.log(profileImage)
+            } else {
+                return res.status(400).send({ message: "No file found" });
+            }
         }
         if (address) {
             // console.log(address)
