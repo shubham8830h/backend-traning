@@ -257,7 +257,7 @@ const updateprofile = async function (req, res) {
         }
         
         if (profileImage) {
-            //if (!isValidImage(profileImage)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
+            // if (!isValidImage(profileImage.originalname)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
             let files = req.files;
             if (files && files.length > 0) {
                 let uploadedFileURL = await uploadFile(files[0]);
