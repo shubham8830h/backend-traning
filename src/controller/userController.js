@@ -2,18 +2,13 @@ const bcrypt = require("bcrypt")
 const userModel = require('../model/userModel')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
-// const aws = require("../middleware/aws")
 const {uploadFile}= require("../middleware/aws")
 const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage,isvalidObjectId } = require("../validation/validator")
 const aws = require('aws-sdk');
 const { fn } = require("moment")
-const { authentication } = require("../middleware/middleware")
+// const { authentication } = require("../middleware/middleware")
 
-aws.config.update({
-    accessKeyId: "AKIAY3L35MCRZNIRGT6N",
-    secretAccessKey: "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",
-    region: "ap-south-1"
-})
+
 
 
 const createUser = async (req, res) => {
@@ -61,13 +56,14 @@ const createUser = async (req, res) => {
 
         //validation for profileImage
         if (profileImage) {
-            //if (!isValidImage(profileImage)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
+            if (!isValidImage(profileImage.originalname)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
             let files = req.files;
+            console.log(files)
             if (files && files.length > 0) {
                 let uploadedFileURL = await uploadFile(files[0]);
 
                 profileImage = uploadedFileURL;
-                console.log(profileImage)
+                // console.log(profileImage)
             } else {
                 return res.status(400).send({ message: "No file found" });
             }
@@ -149,7 +145,6 @@ const createUser = async (req, res) => {
             address: address,
         };
         const saveData = await userModel.create(newData)
-        console.log(saveData)
         return res.status(201).send({ status: true, message: "Success", data: saveData })
 
     } catch (err) { console.log(err) }

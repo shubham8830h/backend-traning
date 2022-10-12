@@ -50,7 +50,7 @@ const isValidMixed = function (value) {
 
     return regex.test(value)
 }
-const isValidRating = function (rating) {
+const isValidNumber = function (rating) {
     const Regex = /^([1-5]{1})$/
 
     return Regex.test(rating);
@@ -61,12 +61,15 @@ const isValidBody = function (value) {
 }
 
 const isValidImage = function (value) {
-    //  const Regex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/
-    // const Regex = "(.*/)*.+\\.(png|jpg|gif|bmp|jpeg|PNG|JPG|GIF|BMP|JPEG)$"
-    // const Regex = /(\/*\.(?:png|gif|webp|jpeg|jpg))/
-    // const Regex = /.*\.(gif|jpe?g|bmp|png|jpg)$/
-    // const Regex = /.+\.(?:(jpg|gif|png|jpeg|jfif))/
     const Regex = /image\/png|image\/jpeg|image\/jpg/
     return Regex.test(value);
 }
-module.exports = { isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidISBN, isValidPinCode, isValidDate, isValidMixed, isValidRating, isValidBody,isValidImage};
+const isValidPrice = function (value) {
+    const Regex = /^[1-9][0-9]{2,5}\.[0-9]{2}|^[1-9][0-9]{2,5}$/
+    return Regex.test(value)
+}
+
+
+
+
+module.exports = { isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidISBN, isValidPinCode, isValidDate, isValidMixed, isValidNumber, isValidBody,isValidImage,isValidPrice};
