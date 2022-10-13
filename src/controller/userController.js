@@ -56,7 +56,7 @@ const createUser = async (req, res) => {
 
         //validation for profileImage
         if (profileImage) {
-            if (!isValidImage(profileImage.originalname)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
+            if (!isValidImage(profileImage[0].mimetype)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
             let files = req.files;
             console.log(files)
             if (files && files.length > 0) {
