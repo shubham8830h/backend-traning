@@ -24,7 +24,9 @@ router.delete('/products/:productId',productController.deleteProductById)
 
 
 router.post('/users/:userId/cart',cartController.createcart)  
-
+router.put('/users/:userId/cart' , cartController.updateCartById)
+router.get('/users/:userId/cart',cartController.getCart)
+router.delete('/users/:userId/cart',cartController.deleteCart)
 
 
 
