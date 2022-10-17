@@ -1,7 +1,7 @@
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt") //123   alkdsjf;kla@j3434
 const userModel = require('../model/userModel')
-const moment = require('moment')
-const jwt = require('jsonwebtoken')
+const moment = require('moment') // manipulate our dates 
+const jwt = require('jsonwebtoken')  // create a token ... 
 const {uploadFile}= require("../middleware/aws")
 const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage,isvalidObjectId } = require("../validation/validator")
 const aws = require('aws-sdk');
@@ -58,7 +58,7 @@ const createUser = async (req, res) => {
         if (profileImage) {
             if (!isValidImage(profileImage[0].mimetype)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
             let files = req.files;
-            console.log(files)
+            // console.log(files)
             if (files && files.length > 0) {
                 let uploadedFileURL = await uploadFile(files[0]);
 
@@ -145,7 +145,7 @@ const createUser = async (req, res) => {
             address: address,
         };
         const saveData = await userModel.create(newData)
-        return res.status(201).send({ status: true, message: "Success", data: saveData })
+        return res.status(201).send({ status: true, message: "User Created successfully", data: saveData })
 
     } catch (err) { console.log(err) }
 }
@@ -157,6 +157,7 @@ const userlogin = async function (req, res) {
         // let password = req.body.password
         let data = req.body
         let { emailId, password } = data
+        if(Object.keys(data).length == 0) return res.status(400).send({status:false, message:"Please proivde data"})
 
         if (!isValid(emailId)) return res.status(400).send({ status: false, message: "Please enter  emailId" })
         if (!isValidEmail(emailId)) return res.status(400).send({ status: false, message: "Please enter valid emailId" })
@@ -172,8 +173,8 @@ const userlogin = async function (req, res) {
         const token = await jwt.sign(
             {
                 userId: userin._id.toString(),
-                iat: Math.floor(Date.now() / 1000),
-                exp: Math.floor(moment().add(1, 'days'))
+                iat: Math.floor(Date.now() / 1000),//created 
+                exp: Math.floor(moment().add(1, 'days')) // expire
             },
             "Secretekeygroup25"
         )
@@ -300,7 +301,7 @@ const updateprofile = async function (req, res) {
         }
        
         let updatedData = await userModel.findByIdAndUpdate({_id:userId},{$set:updations},{new:true})
-        console.log(updatedData)
+        // console.log(updatedData)
         if(!updatedData) return res.status(404).send({status:false, message:"No User found "})
         return res.status(201).send({status:true, message:"updated successfully",data:updatedData})
        
