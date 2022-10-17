@@ -30,13 +30,13 @@ const isValidPassword = function (value) {
 const isvalidObjectId = function (objectId) {
     return mongoose.Types.ObjectId.isValid(objectId)
 };
-const isValidISBN = function (value) {
-    const Regex = /^(?:ISBN(?:-13)?:? )?(?=[0-9]{13}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)97[89][- ]?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9]$/
-    return Regex.test(value);
-}
+// const isValidISBN = function (value) {
+//     const Regex = /^(?:ISBN(?:-13)?:? )?(?=[0-9]{13}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)97[89][- ]?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9]$/
+//     return Regex.test(value);
+// }
 
 const isValidPinCode = function (pincode) {
-    const Regex = /^[1-9]{1}[0-9]{5}$/   //055555     55555
+    const Regex = /^[1-9]{1}[0-9]{5}$/   //    55555
     return Regex.test(pincode);
 }
 const isValidDate = function (date) {
@@ -72,4 +72,4 @@ const isValidPrice = function (value) {
 
 
 
-module.exports = { isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidISBN, isValidPinCode, isValidDate, isValidMixed, isValidNumber, isValidBody,isValidImage,isValidPrice};
+module.exports = { isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidPinCode, isValidDate, isValidMixed, isValidNumber, isValidBody,isValidImage,isValidPrice}

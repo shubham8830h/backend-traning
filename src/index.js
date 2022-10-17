@@ -1,12 +1,12 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require('express'); // framework 
+const bodyParser = require('body-parser');   
 const route =require("./routes/route.js");
-const mongoose  = require('mongoose');
+const mongoose  = require('mongoose');   // liberary 
 
 const app = express();
 const multer= require("multer");
 const { AppConfig } = require('aws-sdk');
-app.use(bodyParser.json()); 
+app.use(bodyParser.json()); //
 app.use( multer().any())
 
 

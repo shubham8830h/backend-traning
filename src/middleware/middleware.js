@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const userModel = require('../model/userModel')
+const productModel = require('../controller/productController')
 const mongoose = require('mongoose')
 const {isvalidObjectId} = require('../validation/validator')
 
@@ -37,7 +38,7 @@ const authorization= async function (req,res,next){
         if(!checkUser)
         return res.status(404).send({ status: false, message:"No user found"});
         if(tokenUserId !=userId)
-        return res.status(403).send({ status: false, message: "You are not authorize to edit"})
+        return res.status(403).send({ status: false, message: "You are not authorized"})
         next();
     } catch (err) {
         return res.status(500).send({ status: false, message:err.message})
