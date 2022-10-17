@@ -59,7 +59,7 @@ let userSchema = new mongoose.Schema({
             }
         }
     }
-}, { timestamps: true });
+}, { timestamps: true }); // created and updated 
 
 
 module.exports = mongoose.model('userList', userSchema)
