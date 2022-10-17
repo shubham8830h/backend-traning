@@ -4,8 +4,8 @@ const moment = require('moment')
 const jwt = require('jsonwebtoken')
 const {uploadFile}= require("../middleware/aws")
 const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage,isvalidObjectId } = require("../validation/validator")
-const aws = require('aws-sdk');
-const { fn } = require("moment")
+// const aws = require('aws-sdk');
+// const { fn } = require("moment")
 // const { authentication } = require("../middleware/middleware")
 
 
@@ -38,7 +38,7 @@ const createUser = async (req, res) => {
         if (!isValid(lname)) {
             return res.status(400).send({ status: false, message: "provide the lname" })
         }
-        if (!(lname)) {
+        if (!isValidName(lname)) {
             return res.status(400).send({ status: false, message: "lname should be character only" })
         }
 

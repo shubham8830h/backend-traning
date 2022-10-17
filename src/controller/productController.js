@@ -1,8 +1,8 @@
 const productModel = require('../model/productModel')
-const userModel = require('../model/userModel')
+// const userModel = require('../model/userModel')
 const { isValid, isValidName, isValidPrice, isValidNumber, isvalidObjectId, isValidImage } = require('../validation/validator')
 const { uploadFile } = require('../middleware/aws')
-const { query } = require('express')
+// const { query } = require('express')
 
 
 
@@ -25,7 +25,7 @@ const createproduct = async function (req, res) {
         
         let titleexist = await productModel.findOne({ title: title, isDeleted: false })
         if (titleexist) 
-        return res.status(404).send({ status: false, message: "title is already exist" })
+        return res.status(400).send({ status: false, message: "title is already exist" })
 
         if (!isValid(description))
          return res.status(400).send({ status: false, message: "Please provide description" })
