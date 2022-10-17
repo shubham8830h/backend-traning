@@ -4,6 +4,7 @@ const userController = require('../controller/userController')
 const aws =  require("../middleware/aws")
 const {authentication,authorization} = require("../middleware/middleware")
 const productController = require("../controller/productController")
+const cartController = require("../controller/cartController")
 
 
 
@@ -20,6 +21,9 @@ router.get('/products/:productId',productController.getProductsById)
 router.put('/products/:productId', productController.updateproduct)
 router.delete('/products/:productId',productController.deleteProductById)
 
+
+
+router.post('/users/:userId/cart',cartController.createcart)  
 
 
 
