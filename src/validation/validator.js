@@ -61,7 +61,8 @@ const isValidBody = function (value) {
 }
 
 const isValidImage = function (value) {
-    const Regex = /image\/png|image\/jpeg|image\/jpg/
+     const Regex = /image\/png|image\/jpeg|image\/jpg/
+    // const Regex = (/^.*\.(jpg|JPG|gif|GIF|webp|tiff?|bmp|png|PNG|pdf|jpeg|JPEG)$/)
     return Regex.test(value);
 }
 const isValidPrice = function (value) {

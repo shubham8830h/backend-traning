@@ -2,19 +2,15 @@ const bcrypt = require("bcrypt") //123   alkdsjf;kla@j3434
 const userModel = require('../model/userModel')
 const moment = require('moment') // manipulate our dates 
 const jwt = require('jsonwebtoken')  // create a token ... 
-const {uploadFile}= require("../middleware/aws")
-const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage,isvalidObjectId } = require("../validation/validator")
-const aws = require('aws-sdk');
-const { fn } = require("moment")
-// const { authentication } = require("../middleware/middleware")
+const { uploadFile } = require("../middleware/aws")
+const { isValid, isValidName, isValidEmail, isValidPhone, isValidPassword, isValidMixed, isValidPinCode, isValidImage, isvalidObjectId } = require("../validation/validator")
 
 
-
-
+// -------------------------------------------CreateUser-----------------------------------------------
 const createUser = async (req, res) => {
     try {
         let data = req.body
-       
+
         let { fname, lname, email, phone, password, address } = req.body
         // let shipping = req.body.address
         // let billing = req.body.address
@@ -150,24 +146,25 @@ const createUser = async (req, res) => {
     } catch (err) { console.log(err) }
 }
 
-
+// -------------------------------------------UserLogin-----------------------------------------------
 const userlogin = async function (req, res) {
     try {
         // let emailId = req.body.email
         // let password = req.body.password
         let data = req.body
-        let { emailId, password } = data
-        if(Object.keys(data).length == 0) return res.status(400).send({status:false, message:"Please proivde data"})
+        let { email, password } = data
+        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please proivde data" })
 
-        if (!isValid(emailId)) return res.status(400).send({ status: false, message: "Please enter  emailId" })
-        if (!isValidEmail(emailId)) return res.status(400).send({ status: false, message: "Please enter valid emailId" })
+        if (!isValid(email)) return res.status(400).send({ status: false, message: "Please enter  emailId" })
+        if (!isValidEmail(email)) return res.status(400).send({ status: false, message: "Please enter valid emailId" })
 
         if (!isValid(password)) return res.status(400).send({ status: false, message: "Please enter password" })
         if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Please enter valid password" })
-        let hpassword = await bcrypt.compare(password,user.password)
-        if(hpassword==false)return res.status(400).send({status:false,message:"Please enter your correct password"})
+        // let hpassword = await bcrypt.compare(password,user.password)
+        // if(hpassword==false)return res.status(400).send({status:false,message:"Please enter your correct password"})
 
-        let userin = await userModel.findOne({ email: emailId, password: password })
+
+        let userin = await userModel.findOne({ email: email, password: password })
         if (!userin) return res.status(404).send({ status: false, message: "Please enter correct emailId and Password" })
 
         const token = await jwt.sign(
@@ -180,21 +177,24 @@ const userlogin = async function (req, res) {
         )
         // res.setHeader("x-auth-key", token)
         // ("authenticate", token)
-        res.setheader("Authorization",token)
+        res.header("Authorization", "Bearer : " + token);
         return res.status(201).send({ status: true, message: "Login Successfully", userId: userin._id, data: token })
     }
     catch (err) {
+        console.log(err)
         return res.status(500).send({ message: err })
     }
 }
 
+// -------------------------------------------Get user-----------------------------------------------
+
 const getuserprofile = async function (req, res) {
     try {
         let userId = req.params.userId
-        if(!userId) return res.status(400).send({status:false, message:"Please enter userId in path param"})
-        if (!isvalidObjectId(userId)) {return res.status(400).send({ status: false, message: "Please enter valid userId" })}
+        if (!userId) return res.status(400).send({ status: false, message: "Please enter userId in path param" })
+        if (!isvalidObjectId(userId)) { return res.status(400).send({ status: false, message: "Please enter valid userId" }) }
         console.log(userId)
-        let userindb = await userModel.findOne({ _id: userId })
+        let userindb = await userModel.findOne({ _id: userId }).select({ createdAt: 0, updatedAt: 0, __v: 0 })
         if (!userindb) return res.status(404).send({ status: false, message: "NO user found" })
 
         return res.status(200).send({ status: true, message: "Users Profile", data: userindb })
@@ -204,67 +204,65 @@ const getuserprofile = async function (req, res) {
     }
 }
 
+
+// -------------------------------------------Updateuser-----------------------------------------------
+
 const updateprofile = async function (req, res) {
     try {
         let userId = req.params.userId
-        if(!userId) return res.status(400).send({status:false, message:"Please enter userId in path param"})
+        if (!userId) return res.status(400).send({ status: false, message: "Please enter userId in path param" })
         if (!isvalidObjectId(userId)) return res.status(400).send({ status: false, message: "Please enter valid userId" })
         let body = req.body
         let profileImage = req.files
-        if ((Object.keys(body).length === 0)&&(!profileImage)) {
+        if ((Object.keys(body).length === 0) && (!profileImage)) {
             return res.status(400).send({ status: false, message: "Please enter updations details" })
-        } 
+        }
         // if(!(body || profileImage))  return res.status(400).send({ status: false, message: "Please enter updations details" })
-        let { fname, lname, email, phone,password, address } = body
+        let { fname, lname, email, phone, password, address } = body
         // console.log(body)
         // let shipping = req.body.address
         // let billing = req.body.address
-        
-        
-        let updations ={}
+
+
+        let updations = {}
         // console.log(updations)
 
-        if(fname){
-            if(!isValid(fname)) return res.status(400).send({status:false, message:"Please enter fname"})
-            if(!isValidName(fname)) return res.status(400).send({status:false, message:"Please enter valid fname"})
+        if (fname != null) {
+            if (!isValid(fname)) return res.status(400).send({ status: false, message: "Please enter fname" })
+            if (!isValidName(fname)) return res.status(400).send({ status: false, message: "Please enter valid fname" })
             updations.fname = fname
         }
-        if(lname){
-            if(!isValid(lname)) return res.status(400).send({status:false, message:"Please enter lname"})
-            if(!isValidName(lname)) return res.status(400).send({status:false, message:"Please enter valid lname"})
+        if (lname != null) {
+            if (!isValid(lname)) return res.status(400).send({ status: false, message: "Please enter lname" })
+            if (!isValidName(lname)) return res.status(400).send({ status: false, message: "Please enter valid lname" })
             updations.lname = lname
         }
-        if(email){
-            if(!isValid(email)) return res.status(400).send({status:false, message:"Please enter email"})
-            if(!isValidEmail(email)) return res.status(400).send({status:false, message:"Please enter valid email"})
+        if (email != null) {
+            if (!isValid(email)) return res.status(400).send({ status: false, message: "Please enter email" })
+            if (!isValidEmail(email)) return res.status(400).send({ status: false, message: "Please enter valid email" })
             updations.email = email
         }
-        if(phone){
-            if(!isValid(phone)) return res.status(400).send({status:false, message:"Please enter phone"})
-            if(!isValidPhone(phone)) return res.status(400).send({status:false, message:"Please enter valid phone"})
+        if (phone != null) {
+            if (!isValid(phone)) return res.status(400).send({ status: false, message: "Please enter phone" })
+            if (!isValidPhone(phone)) return res.status(400).send({ status: false, message: "Please enter valid phone" })
             updations.phone = phone
         }
-        if(password){
-            if(!isValid(password)) return res.status(400).send({status:false, message:"Please enter password"})
-            if(!isValidPassword(password)) return res.status(400).send({status:false, message:"Please enter valid password"})
+        if (password != null) {
+            if (!isValid(password)) return res.status(400).send({ status: false, message: "Please enter password" })
+            if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Please enter valid password" })
             const encryptedPassword = await bcrypt.hash(password, 15); //encrypting the Password
             req.body.password = encryptedPassword;
             updations.password = password
         }
-        
-        if (profileImage) {
-            // if (!isValidImage(profileImage.originalname)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
-            let files = req.files;
-            if (files && files.length > 0) {
-                let uploadedFileURL = await uploadFile(files[0]);
 
-                profileImage = uploadedFileURL;
-                console.log(profileImage)
-            } else {
-                return res.status(400).send({ message: "No file found" });
-            }
+        if (profileImage && profileImage.length > 0) {
+            if (!isValidImage(profileImage[0].mimetype)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
+            let uploadedFileURL = await uploadFile(profileImage[0]);
+            profileImage = uploadedFileURL
+            updations.profileImage = uploadedFileURL
         }
-        if (address) {
+
+        if (address != null) {
             // console.log(address)
             address = JSON.parse(address)
             if (address.shipping) {
@@ -299,17 +297,18 @@ const updateprofile = async function (req, res) {
             }
             updations.address = address
         }
-       
-        let updatedData = await userModel.findByIdAndUpdate({_id:userId},{$set:updations},{new:true})
+
+        let updatedData = await userModel.findByIdAndUpdate({ _id: userId }, { $set: updations }, { new: true })
         // console.log(updatedData)
-        if(!updatedData) return res.status(404).send({status:false, message:"No User found "})
-        return res.status(201).send({status:true, message:"updated successfully",data:updatedData})
-       
+        if (!updatedData) return res.status(404).send({ status: false, message: "No User found " })
+        return res.status(201).send({ status: true, message: "updated successfully", data: updatedData })
+
     }
     catch (err) {
         return res.status(500).send({ message: err })
     }
 }
 
+// -------------------------------------------export-----------------------------------------------
 module.exports = { createUser, userlogin, getuserprofile, updateprofile }
 
