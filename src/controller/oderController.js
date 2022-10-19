@@ -49,6 +49,9 @@ const createOrder = async function(req,res)
         }
 
         let ordercreated = await orderModel.create(newData)
+        if(ordercreated){
+            const removeCart = await cartModel.findOneAndUpdate({ userId }, { $set: { items: [], totalItems: 0, totalPrice: 0 } }, { new: true })
+        }
         return res.status(201).send({status:true, message:"Order created Successfully", data:ordercreated})
     }
     catch(err)
