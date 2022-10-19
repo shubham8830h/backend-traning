@@ -4,9 +4,9 @@ aws.config.update({
     accessKeyId: "AKIAY3L35MCRZNIRGT6N",
     secretAccessKey: "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",
     region: "ap-south-1"
-})
+})    //we are saying we are accessing aws by this key
 
-let uploadFile= async ( file) =>{
+let uploadFile= async ( file) =>{                           
    return new Promise( function(resolve, reject) {    
     // this function will upload file to aws and return the link
     let s3= new aws.S3({apiVersion: '2006-03-01'}); // we will be using the s3 service of aws     
