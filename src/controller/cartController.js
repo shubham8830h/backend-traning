@@ -9,7 +9,7 @@ const createcart = async function (req, res) {
         let userId = req.params.userId
         if (!isvalidObjectId(userId)) return res.status(400).send({ status: false, message: "Please provide valid userId" })
         let user = await userModel.findOne({ _id: userId, isDeleted: false })
-        if (!user) return res.status(400).send({ status: false, message: "User not present or may be deleted" })
+        if (!user) return res.status(404).send({ status: false, message: "User not present or may be deleted" })
 
         let data = req.body
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please provide  data in request body" })
@@ -54,7 +54,7 @@ const createcart = async function (req, res) {
                 if (!isvalidObjectId(cartId)) return res.status(400).send({ status: false, message: "Please provide valid cartId" })
                 
             let addproduct = await cartModel.findOneAndUpdate({ _id: cartId , userId:userId}, { $set: items }, { new: true }).populate({ path: 'items.productId', model: productModel, select: ["title", "price", "productImage", "availableSizes"] })
-            if (!addproduct) return res.send({ status: false, message: "Cart not found or you are not authorised " })
+            if (!addproduct) return res.status(404).send({ status: false, message: "Cart not found or you are not authorised " })
             return res.status(201).send({ status: true, message: "Product added successfully", data: addproduct })
         }
         return res.status(400).send({status:false, message:"Please provide cartId"})
@@ -108,13 +108,6 @@ const getCart = async function (req, res) {
 };
 
 
-
-
-
-
-
-
-
 const updateCartById = async function (req, res) {
     try {
         // Extract userId from params
@@ -162,7 +155,7 @@ const updateCartById = async function (req, res) {
         if (!isCartExist) {
             return res.status(404).send({
                 status: false,
-                message: `Cart Not Found Please Check Cart Id`,
+                message: `Cart Not Found `,
             });
         }
 
@@ -194,7 +187,7 @@ const updateCartById = async function (req, res) {
                 .status(400)
                 .send({ status: false, message: "enter the productId" });
         }
-        productId = productId.trim();
+        // productId = productId.trim();
 
         // Validate the Product ID
         if (!isvalidObjectId(productId)) {
@@ -324,7 +317,7 @@ const deleteCart = async function (req, res) {
         }
 
         const cartDelete = await cartModel.findOneAndUpdate({ userId }, { $set: { items: [], totalItems: 0, totalPrice: 0 } }, { new: true })
-        console.log(cartDelete)
+        // console.log(cartDelete)
         return res.status(204).send({ status: true, message:"Cart is deleted successfully"})
 
     }

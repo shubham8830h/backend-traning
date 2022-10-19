@@ -5,6 +5,7 @@ const aws =  require("../middleware/aws")
 const {authentication,authorization} = require("../middleware/middleware")
 const productController = require("../controller/productController")
 const cartController = require("../controller/cartController")
+const orderController = require("../controller/oderController")
 
 
 
@@ -28,7 +29,8 @@ router.put('/users/:userId/cart' , cartController.updateCartById)
 router.get('/users/:userId/cart',cartController.getCart)
 router.delete('/users/:userId/cart',cartController.deleteCart)
 
-
+router.post('/users/:userId/orders',orderController.createOrder)
+router.put('/users/:userId/orders',orderController.updateOrder)
 
 router.all("/**",  (req, res) => {
     res.status(400).send({ status: false, msg: "The api you request is not available" })

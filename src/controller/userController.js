@@ -263,36 +263,48 @@ const updateprofile = async function (req, res) {
         }
 
         if (address != null) {
-            // console.log(address)
+            console.log(address)
             address = JSON.parse(address)
             if (address.shipping) {
-                if (!isValid(address.shipping.street))
-                    return res.status(400).send({ status: false, message: "please enter shipping street address" })
-                if (!isValidMixed(address.shipping.street))
-                    return res.status(400).send({ status: false, message: "please enter valid shipping street address" })
-                if (!isValid(address.shipping.city))
-                    return res.status(400).send({ status: false, message: "please enter shipping city address" })
-                if (!isValidMixed(address.shipping.city))
-                    return res.status(400).send({ status: false, message: "please enter valid  shipping city address" })
-                if (!isValid(address.shipping.pincode))
-                    return res.status(400).send({ status: false, message: "please enter shipping pin " })
-                if (!isValidPinCode(address.shipping.pincode))
-                    return res.status(400).send({ status: false, message: "please enter valid shipping pin" })
+                if (address.shipping.street) {
+                    if (!isValid(address.shipping.street))
+                        return res.status(400).send({ status: false, message: "please enter shipping street address" })
+                    if (!isValidMixed(address.shipping.street))
+                        return res.status(400).send({ status: false, message: "please enter valid shipping street address" })
+                }
+                if (address.shipping.city) {
+                    if (!isValid(address.shipping.city))
+                        return res.status(400).send({ status: false, message: "please enter shipping city address" })
+                    if (!isValidMixed(address.shipping.city))
+                        return res.status(400).send({ status: false, message: "please enter valid  shipping city address" })
+                }
+                if (address.shipping.pincode) {
+                    if (!isValid(address.shipping.pincode))
+                        return res.status(400).send({ status: false, message: "please enter shipping pin " })
+                    if (!isValidPinCode(address.shipping.pincode))
+                        return res.status(400).send({ status: false, message: "please enter valid shipping pin" })
+                }
 
             }
             if (address.billing) {
-                if (!isValid(address.billing.street))
-                    return res.status(400).send({ status: false, message: "please enter   billing street address" })
-                if (!isValidMixed(address.billing.street))
-                    return res.status(400).send({ status: false, message: "please enter valid billing street address" })
-                if (!isValid(address.billing.city))
-                    return res.status(400).send({ status: false, message: "please enter  billing city address" })
-                if (!isValidMixed(address.billing.city))
-                    return res.status(400).send({ status: false, message: "please enter valid billing city address" })
-                if (!isValid(address.billing.pincode))
-                    return res.status(400).send({ status: false, message: "please enter  billing pin " })
-                if (!isValidPinCode(address.billing.pincode))
-                    return res.status(400).send({ status: false, message: "please enter billing valid pin" })
+                if (address.billing.street) {
+                    if (!isValid(address.billing.street))
+                        return res.status(400).send({ status: false, message: "please enter   billing street address" })
+                    if (!isValidMixed(address.billing.street))
+                        return res.status(400).send({ status: false, message: "please enter valid billing street address" })
+                }
+                if (address.billing.city) {
+                    if (!isValid(address.billing.city))
+                        return res.status(400).send({ status: false, message: "please enter  billing city address" })
+                    if (!isValidMixed(address.billing.city))
+                        return res.status(400).send({ status: false, message: "please enter valid billing city address" })
+                }
+                if (address.billing.pincode) {
+                    if (!isValid(address.billing.pincode))
+                        return res.status(400).send({ status: false, message: "please enter  billing pin " })
+                    if (!isValidPinCode(address.billing.pincode))
+                        return res.status(400).send({ status: false, message: "please enter billing valid pin" })
+                }
 
             }
             updations.address = address
@@ -305,7 +317,7 @@ const updateprofile = async function (req, res) {
 
     }
     catch (err) {
-        return res.status(500).send({ message: err })
+        return res.status(500).send({ message: err })   
     }
 }
 
