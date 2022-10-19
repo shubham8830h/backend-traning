@@ -24,5 +24,3 @@ app.listen(process.env.PORT || 3000, function () {
 });
 
 
-const ext = [".jpg", ".jpeg", ".bmp", ".gif", ".png", ".svg"]
-    return ext.some((el) => icon.endsWith(el))
