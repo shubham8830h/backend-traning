@@ -2,12 +2,13 @@ const { mongoose } = require("mongoose");
 
 const isValid = function (value) {
     if (typeof value === "undefined" || value === null) return false;
-    if (typeof value === "string" && value.trim().length > 0) return true;
-    return false;
+    if (typeof value === "string" && value.trim().length == 0) return false;
+    return true;
 };
 
 const isValidEmail = function (email) {
     const emailRegex = /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/
+   
     ///^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/
     return emailRegex.test(email);
 };
@@ -46,8 +47,7 @@ const isValidDate = function (date) {
 }
 const isValidMixed = function (value) {
     //  const regex = /(?<![0-9]\S{0,100})[^a-zA-Z](?!\S{0,100}[0-9])|(?<=[0-9]\S{0,100})[^a-zA-Z0-9-](?=\S{0,100}[0-9])/
-    const regex = /^([a-zA-Z]+|[a-zA-Z]+\s[a-zA-Z]+)$/
-
+    const regex = /^[a-zA-Z0-9_.-]*$/
     return regex.test(value)
 }
 const isValidNumber = function (rating) {
@@ -61,8 +61,8 @@ const isValidBody = function (value) {
 }
 
 const isValidImage = function (value) {
-     const Regex = /image\/png|image\/jpeg|image\/jpg/
-    // const Regex = (/^.*\.(jpg|JPG|gif|GIF|webp|tiff?|bmp|png|PNG|pdf|jpeg|JPEG)$/)
+    const Regex = /image\/png|image\/jpeg|image\/jpg/
+    //  const Regex = (/^.*\.(jpg|JPG|gif|GIF|webp|tiff?|bmp|png|PNG|pdf|jpeg|JPEG)$/)
     return Regex.test(value);
 }
 const isValidPrice = function (value) {
