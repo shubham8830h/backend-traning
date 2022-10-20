@@ -11,8 +11,8 @@ const orderController = require("../controller/oderController")
 
 router.post('/register',userController.createUser)
 router.post('/login',userController.userlogin)
-router.get('/user/:userId/profile' ,authentication, userController.getuserprofile)
-router.put('/user/:userId/profile',authentication,userController.updateprofile)
+router.get('/user/:userId/profile' ,authentication,userController.getuserprofile)
+router.put('/user/:userId/profile',authentication,authorization,userController.updateprofile)
 
 
 

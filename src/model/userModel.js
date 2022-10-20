@@ -3,37 +3,45 @@ const mongoose = require('mongoose');
 let userSchema = new mongoose.Schema({
     fname: {
         type: String,
-        require: true
+        require: true,
+        trim:true
     },
     lname: {
         type: String,
-        require: true
+        require: true,
+        trim:true
     },
     email: {
         type: String,
         require: true,
-        unique: true
+        unique: true,
+        trim:true
+
     },
     profileImage: {
         type: String,
-        require: true
+        require: true,
+        trim:true
     },
     phone: {
         type: String,
         require: true,
-        unique: true
+        unique: true,
+        trim:true
     },
     password: {
         type: String,
         require: true,
         minLen: 8,
-        maxLen: 15
+        maxLen: 15,
+        trim:true
     },
     address: {
         shipping: {
             street: {
                 type: String,
                 require: true
+        
             },
             city: {
                 type: String,
