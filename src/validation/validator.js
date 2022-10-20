@@ -1,5 +1,6 @@
 const { mongoose } = require("mongoose");
 
+
 const isValid = function (value) {
     if (typeof value === "undefined" || value === null) return false;
     if (typeof value === "string" && value.trim().length > 0) return true;
@@ -18,7 +19,13 @@ const isValidPhone = function (number) {
 }
 
 const isValidName = function (value) {
+     const regex = /^[a-zA-Z]+([\s][a-zA-Z]+)*$/
+    return regex.test(value)
+}
+const isValidproduct = function (value) {
+   
     const regex = /^[a-zA-Z]+([\s][a-zA-Z]+)*$/
+    // /^[A-Za-z\s.\(\)0-9]$/
     return regex.test(value)
 }
 
@@ -30,33 +37,27 @@ const isValidPassword = function (value) {
 const isvalidObjectId = function (objectId) {
     return mongoose.Types.ObjectId.isValid(objectId)
 };
-// const isValidISBN = function (value) {
-//     const Regex = /^(?:ISBN(?:-13)?:? )?(?=[0-9]{13}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)97[89][- ]?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9]$/
-//     return Regex.test(value);
-// }
 
 const isValidPinCode = function (pincode) {
     const Regex = /^[1-9]{1}[0-9]{5}$/   //    55555
     return Regex.test(pincode);
 }
-const isValidDate = function (date) {
-    const Regex = /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/
 
-    return Regex.test(date)
-}
 const isValidMixed = function (value) {
     //  const regex = /(?<![0-9]\S{0,100})[^a-zA-Z](?!\S{0,100}[0-9])|(?<=[0-9]\S{0,100})[^a-zA-Z0-9-](?=\S{0,100}[0-9])/
-    const regex = /^([a-zA-Z]+|[a-zA-Z]+\s[a-zA-Z]+)$/
+    // const regex = /^([a-zA-Z]+|[a-zA-Z]+\s[a-zA-Z]+)$/
+    const regex = /^[#.0-9a-zA-Z\s,-]+$/
 
     return regex.test(value)
 }
-const isValidNumber = function (rating) {
-    const Regex = /^([1-5]{1})$/
+const isValidNumber = function (value) {
+    // const Regex = /^([1-5]{1})$/
+    const Regex = /[0-9][0-9.]*[0-9]+$/
 
-    return Regex.test(rating);
+    return Regex.test(value);
 }
 const isValidBody = function (value) {
-    if (typeof value === "undefined" || value === null)
+    if (Object.keys(value).length == 0)
         return false;
 }
 
@@ -73,4 +74,4 @@ const isValidPrice = function (value) {
 
 
 
-module.exports = { isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidPinCode, isValidDate, isValidMixed, isValidNumber, isValidBody,isValidImage,isValidPrice}
+module.exports = { isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidPinCode, isValidMixed, isValidNumber, isValidBody,isValidImage,isValidPrice,isValidproduct}

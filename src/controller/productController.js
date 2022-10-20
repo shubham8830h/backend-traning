@@ -1,5 +1,5 @@
 const productModel = require('../model/productModel')
-const { isValid, isValidName, isValidPrice, isValidNumber, isvalidObjectId, isValidImage } = require('../validation/validator')
+const { isValid, isValidName, isValidPrice, isValidNumber, isvalidObjectId, isValidImage,isValidproduct, isValidBody } = require('../validation/validator')
 const { uploadFile } = require('../middleware/aws')
 
 
@@ -8,13 +8,14 @@ const { uploadFile } = require('../middleware/aws')
 const createproduct = async function (req, res) {
     try {
         let body = req.body
-        if (Object.keys(body).length === 0) return res.status(400).send({ status: false, message: "provide the All data" })
+         if (!isValidBody(body)) return res.status(400).send({ status: false, message: "Provide data in request body" })
+        // if(Object.keys(body).length == 0) return res.status(400).send({ status: false, message: "Provide data in request body" })
         let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments, isDeleted } = body
         let productImage = req.files
 
 
         if (!isValid(title)) return res.status(400).send({ status: false, message: "Please provide title" })
-        if (!isValidName(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })
+        if (!isValidproduct(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })
         let titleexist = await productModel.findOne({ title: title, isDeleted: false })
         if (titleexist) return res.status(404).send({ status: false, message: "title is already exist" })
 
@@ -45,7 +46,8 @@ const createproduct = async function (req, res) {
         if (availableSizes) {
             if (!isValid(availableSizes)) return res.status(400).send({ status: false, message: "Please provide availablesize" })
             let sizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-            // availableSizes = JSON.parse(availableSizes)
+            availableSizes = JSON.parse(availableSizes)   //split method
+            console.log(availableSizes)
             for (let i = 0; i < availableSizes.length; i++) {
                 if (!sizes.includes(availableSizes[i])) {
                     return res.status(400).send({ status: false, message: "availableSizes should be-[S, XS,M,X, L,XXL, XL]", })
@@ -58,19 +60,16 @@ const createproduct = async function (req, res) {
         if (!installments) return res.status(400).send({ status: false, message: "Please provide installments" })
         if (!isValidNumber(installments)) return res.status(400).send({ status: false, message: "Please provide valid installment" })
 
-        if (productImage) {
-            if (!isValidImage(productImage[0].mimetype)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
             // let files = req.files;
             if (productImage && productImage.length > 0) {
                 let uploadedFileURL = await uploadFile(productImage[0]);
+                if (!isValidImage(productImage[0].mimetype)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
                 // console.log("HI")
                 productImage = uploadedFileURL;
                 // console.log(uploadedFileURL)
             } else {
-                return res.status(400).send({ message: "No file found" });
+                return res.status(400).send({ message: "Please provide productImage" });
             }
-        }
-        else { return res.status(400).send({ status: false, message: "Please provide productImage" }) }
 
         const newData = {
             title: title,
@@ -102,6 +101,7 @@ const createproduct = async function (req, res) {
 const getProduct = async function (req, res) {
     try {
         let data = req.query;
+        if(!data) return res.status(400).send()
         let filter = { isDeleted: false };
         let { size, name, priceGreaterThan, priceLessThan, priceSort } = data;
         // validation for size
@@ -122,7 +122,7 @@ const getProduct = async function (req, res) {
         if (name) {
             // name = name.toUpperCase()  
             if (!isValid(name)) return res.status(400).send({ status: false, message: "Product title is required" });
-            if (!isValidName(name)) return res.status(400).send({ status: false, message: "Product title should be valid" });
+            if (!isValidproduct(name)) return res.status(400).send({ status: false, message: "Product title should be valid" });
             // { <field>: { $regex: /pattern/, $options: '<options>' } }
             filter.title = { $regex: name, $options: "i" }  //product  Product1 ,,,,procude lkj
         };
@@ -218,7 +218,7 @@ const updateproduct = async function (req, res) {
 
         if (title != null) {
             if (!isValid(title)) return res.status(400).send({ status: false, message: "Please provide title" })
-            if (!isValidName(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })
+            if (!isValidproduct(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })
             let titleexist = await productModel.findOne({ title: title, isDeleted: false })
             if (titleexist) return res.status(404).send({ status: false, message: "title is already exist" })
             updations.title = title
