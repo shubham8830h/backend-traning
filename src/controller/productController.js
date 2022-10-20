@@ -1,5 +1,5 @@
 const productModel = require('../model/productModel')
-const { isValid, isValidName, isValidPrice, isValidNumber, isvalidObjectId, isValidImage } = require('../validation/validator')
+const {isValidNames,isValidMixed, isValid, isValidName, isValidPrice, isValidNumber, isvalidObjectId, isValidImage } = require('../validation/validator')
 const { uploadFile } = require('../middleware/aws')
 
 
@@ -14,24 +14,24 @@ const createproduct = async function (req, res) {
 
 
         if (!isValid(title)) return res.status(400).send({ status: false, message: "Please provide title" })
-        if (!isValidName(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })
+        if (!isValidMixed(title)) return res.status(400).send({ status: false, message: "Please provide valid title" })
         let titleexist = await productModel.findOne({ title: title, isDeleted: false })
         if (titleexist) return res.status(404).send({ status: false, message: "title is already exist" })
 
         if (!isValid(description)) return res.status(400).send({ status: false, message: "Please provide description" })
-        if (!isValidName(description)) return res.status(400).send({ status: false, message: "Please provide valid description" })
+        if (!isValidName(description.trim())) return res.status(400).send({ status: false, message: "Please provide valid description" })
 
         if (!isValid(price)) return res.status(400).send({ status: false, message: "Please provide price" })
-        if (!isValidPrice(price)) return res.status(400).send({ status: false, message: "Please provide valid price" })
+        if (!isValidPrice(price.trim())) return res.status(400).send({ status: false, message: "Please provide valid price" })
 
         if (!isValid(currencyId)) return res.status(400).send({ status: false, message: "Please provide currencyId" })
-        if (currencyId !== "INR") return res.status(400).send({ status: false, message: "Please provide valid currencyId" })
+        if (currencyId !== "INR") return res.status(400).send({ status: false, message: "Please provide valid currencyId & it should be INR only" })
 
 
         if(currencyFormat)
         {
             if (!isValid(currencyFormat)) return res.status(400).send({ status: false, message: "Please provide currencyFormat" })
-            if (currencyFormat !== "₹") return res.status(400).send({ status: false, message: "Please provide valid currencyFormat" })
+            if (currencyFormat !== "₹") return res.status(400).send({ status: false, message: "Please provide valid currencyFormat & it should be ₹ only" })
         }
 
         if (isFreeShipping) {
@@ -39,13 +39,14 @@ const createproduct = async function (req, res) {
         }
 
         if (!isValid(style)) return res.status(400).send({ status: false, message: "Please provide style" })
-        if (!isValidName(style)) return res.status(400).send({ status: false, message: "style must be in characters" })
+        if (!isValidNames(style)) return res.status(400).send({ status: false, message: "style must be in characters" })
 
         // if (!isValid(availableSizes)) return res.status(400).send({ status: false, message: "Please provide availablesize" })
         if (availableSizes) {
+            
             if (!isValid(availableSizes)) return res.status(400).send({ status: false, message: "Please provide availablesize" })
             let sizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-            // availableSizes = JSON.parse(availableSizes)
+             availableSizes = JSON.parse(availableSizes)
             for (let i = 0; i < availableSizes.length; i++) {
                 if (!sizes.includes(availableSizes[i])) {
                     return res.status(400).send({ status: false, message: "availableSizes should be-[S, XS,M,X, L,XXL, XL]", })
@@ -56,18 +57,17 @@ const createproduct = async function (req, res) {
 
 
         if (!installments) return res.status(400).send({ status: false, message: "Please provide installments" })
-        if (!isValidNumber(installments)) return res.status(400).send({ status: false, message: "Please provide valid installment" })
+        if (!isValidNumber(installments)) return res.status(400).send({ status: false, message: "Please provide valid installment in number." })
 
         if (productImage) {
-            if (!isValidImage(productImage[0].mimetype)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
-            // let files = req.files;
             if (productImage && productImage.length > 0) {
+                if (!isValidImage(productImage[0].mimetype)) return res.status(400).send({ status: false, message: "provide the valid productImage" })
                 let uploadedFileURL = await uploadFile(productImage[0]);
-                // console.log("HI")
+
                 productImage = uploadedFileURL;
-                // console.log(uploadedFileURL)
+                // console.log(profileImage)
             } else {
-                return res.status(400).send({ message: "No file found" });
+                return res.status(400).send({ message: "productImage is required." });
             }
         }
         else { return res.status(400).send({ status: false, message: "Please provide productImage" }) }

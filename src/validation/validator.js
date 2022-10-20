@@ -19,10 +19,15 @@ const isValidPhone = function (number) {
 }
 
 const isValidName = function (value) {
-    const regex = /^[a-zA-Z]+([\s][a-zA-Z]+)*$/
+    // const regex = /^[a-zA-Z]+([\s][a-zA-Z]+)*$/
+    const regex =  /(?<![0-9]\S{0,100})[^a-zA-Z](?!\S{0,100}[0-9])|(?<=[0-9]\S{0,100})[^a-zA-Z0-9-](?=\S{0,100}[0-9])/
     return regex.test(value)
 }
-
+const isValidNames = function (value) {
+     const regex = /^[a-zA-Z]+([\s][a-zA-Z]+)*$/
+    // const regex =  /(?<![0-9]\S{0,100})[^a-zA-Z](?!\S{0,100}[0-9])|(?<=[0-9]\S{0,100})[^a-zA-Z0-9-](?=\S{0,100}[0-9])/
+    return regex.test(value)
+}
 const isValidPassword = function (value) {
     const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$/
     return regex.test(value)
@@ -51,7 +56,8 @@ const isValidMixed = function (value) {
     return regex.test(value)
 }
 const isValidNumber = function (rating) {
-    const Regex = /^([1-5]{1})$/
+    // const Regex = /^([0-9]{1})$/
+    const Regex = /[0-9.]*[0-9]+$/
 
     return Regex.test(rating);
 }
@@ -73,4 +79,4 @@ const isValidPrice = function (value) {
 
 
 
-module.exports = { isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidPinCode, isValidDate, isValidMixed, isValidNumber, isValidBody,isValidImage,isValidPrice}
+module.exports = { isValidNames,isValid, isValidEmail, isValidPhone, isValidName, isValidPassword, isvalidObjectId, isValidPinCode, isValidDate, isValidMixed, isValidNumber, isValidBody,isValidImage,isValidPrice}
