@@ -32,7 +32,7 @@ const createOrder = async function (req, res) {
 
         if (status) {
             if (!isValid(status)) return res.status(400).send({ status: false, message: "Please provide status" })
-            // if (!isvalidObjectId(status)) return res.status(400).send({ status: false, message: "Please provide valid status" })
+            if (!isvalidObjectId(status)) return res.status(400).send({ status: false, message: "Please provide valid status" })
             if (status !== "pending" && status !== "completed" && status !== "cancelled") return res.status(400).send({ status: false, message: "Please provide status (pending, completed, cancelled)" })
             body.status = status
         }
@@ -51,15 +51,10 @@ const createOrder = async function (req, res) {
         if (ordercreated) {
             const removeCart = await cartModel.findOneAndUpdate({ userId }, { $set: { items: [], totalItems: 0, totalPrice: 0 } }, { new: true })
         }
-        // if(ordercreated.totalItems = 0)
-        // {
-        //     return res.status(400).send({status:false, message:"Order already created for this cartId"})
-        // }
         return res.status(201).send({ status: true, message: "Order created Successfully", data: ordercreated })
     }
-    catch (err) {
-        console.log(err)
-        return res.status(500).send({ status: false, message: "Error", error: err.message })
+    catch (error) {
+        return res.status(500).send({ status: false, error: error.message });
     }
 
 }
@@ -67,12 +62,8 @@ const createOrder = async function (req, res) {
 
 const updateOrder = async function (req, res) {
     try {
-        let userId = req.params.userId
-        if(!isvalidObjectId(userId)) return res.status(400).send({ status: false, message: "Please data in request body" })
-
         let data = req.body
-        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "Please data in request body" })
-       
+        let userId = req.params.userId
         let { orderId, status } = data
 
         if (!isValid(orderId)) return res.status(400).send({ status: false, message: "order Id must be present" })
@@ -86,8 +77,8 @@ const updateOrder = async function (req, res) {
 
         if (!status) return res.status(400).send({ status: false, message: "enter the status of the order" })
 
-        if (findOrder.status == "completed") return res.status(400).send({ status: false, message: "order  completed" })
-        if (findOrder.status == "cancelled") return res.status(400).send({ status: false, message: "order  cancelled" })
+        if (findOrder.status == "completed") return res.status(400).send({ status: false, message: "order is completed cannot change its status" })
+        if (findOrder.status == "cancelled") return res.status(400).send({ status: false, message: "order is cancelled cannot change its status" })
 
         if (status == "completed") {
 
@@ -95,7 +86,7 @@ const updateOrder = async function (req, res) {
 
             await cartModel.findOneAndUpdate({ userId }, { items: [], totalPrice: 0, totalItems: 0 }, { new: true })
 
-            return res.status(201).send({ status: true, message: "Success", data: update })
+            return res.status(200).send({ status: true, message: "Success", data: update })
         }
 
         else if (status == "cancelled") {
@@ -106,7 +97,7 @@ const updateOrder = async function (req, res) {
 
             await cartModel.findOneAndUpdate({ userId }, { items: [], totalPrice: 0, totalItems: 0 }, { new: true })
 
-            return res.status(201).send({ status: true, message: "Success", data: updatedata })
+            return res.status(200).send({ status: true, message: "Success", data: updatedata })
         }
 
         else {
@@ -115,8 +106,8 @@ const updateOrder = async function (req, res) {
         }
 
     }
-    catch (err) {
-        return res.status(500).send({ status: false, message: err.message })
+    catch (error) {
+        return res.status(500).send({ status: false, error: error.message });
     }
 
 
