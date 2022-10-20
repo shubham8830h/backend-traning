@@ -45,7 +45,7 @@ const createproduct = async function (req, res) {
         if (availableSizes) {
             if (!isValid(availableSizes)) return res.status(400).send({ status: false, message: "Please provide availablesize" })
             let sizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-            availableSizes = JSON.parse(availableSizes)
+            // availableSizes = JSON.parse(availableSizes)
             for (let i = 0; i < availableSizes.length; i++) {
                 if (!sizes.includes(availableSizes[i])) {
                     return res.status(400).send({ status: false, message: "availableSizes should be-[S, XS,M,X, L,XXL, XL]", })

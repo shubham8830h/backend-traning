@@ -30,8 +30,8 @@ const createcart = async function (req, res) {
         if (cart) {
             let cartItems = cart.items
             for (let i = 0; i < cartItems.length; i++) {
-                if (cartItems.productId == addItems.productId) {
-                    cartItems.quantity = cartItems.quantity + addItems.quantity,
+                if (cartItems[i].productId == addItems.productId) {
+                    cartItems[i].quantity = cartItems[i].quantity + addItems.quantity,
                         cart.totalItems = cart.totalItems
                     break
                 }
