@@ -110,39 +110,30 @@ const getCart = async function (req, res) {
 
 const updateCartById = async function (req, res) {
     try {
-        // Extract userId from params
+    
         let userId = req.params.userId;
 
-        // Validate UserId came from Params
         if (!isvalidObjectId(userId)) {
             return res
                 .status(400)
                 .send({ status: false, message: "Enter a Valid UserID" });
         }
 
-        // Check User Exists or not
         let isUserExist = await userModel.findById(userId);
         if (!isUserExist) {
             return res.status(404).send({ status: false, message: "User Not Found" });
         }
 
-        // Authorization
-        if (isUserExist.userId !== req.userId) {
-            return res
-                .status(403)
-                .send({ status: false, message: "user not authorized to update cart" });
-        }
+        // // Authorization
+        // if (isUserExist.userId !== req.userId) {
+        //     return res
+        //         .status(403)
+        //         .send({ status: false, message: "user not authorized to update cart" });
+        // }
 
-        // Extract requestBody from reqbody
         let requestBody = req.body;
 
-        // Validate the reqBody
-        // if (!isValidBody(requestBody)) {
-        //     return res
-        //         .status(400)
-        //         .send({ status: false, message: `Invalid Request parameters` });
-        // }
-         if(Object.keys(requestBody).length == 0) {return res
+          if(Object.keys(requestBody).length == 0) {return res
                  .status(400)
                  .send({ status: false, message: `Invalid Request parameters` });
          }
@@ -159,7 +150,6 @@ const updateCartById = async function (req, res) {
             });
         }
 
-        //  Check Cart ID is coming or not
         if (!isValid(cartId)) {
             return res
                 .status(400)
@@ -181,13 +171,13 @@ const updateCartById = async function (req, res) {
                 .send({ status: false, message: "CartId and user do not match" });
         }
 
-        //  Check  Product ID is coming or not
+        
         if (!isValid(productId)) {
             return res
                 .status(400)
                 .send({ status: false, message: "enter the productId" });
         }
-        // productId = productId.trim();
+       
 
         // Validate the Product ID
         if (!isvalidObjectId(productId)) {
@@ -223,7 +213,7 @@ const updateCartById = async function (req, res) {
             });
         }
 
-        // Remove Product should be 1 or 0
+    
         if (!(removeProduct === 1 || removeProduct === 0)) {
             return res.status(400).send({
                 status: false,
@@ -238,7 +228,7 @@ const updateCartById = async function (req, res) {
         let idList = itemList.map((ele) => (ele = ele.productId.toString()));
         let index = idList.indexOf(productId);
 
-        // Check if index is equal to -1 then throw error
+       
         if (index == -1) {
             return res
                 .status(400)
@@ -271,8 +261,8 @@ const updateCartById = async function (req, res) {
 
         // If Remove Product Key is ONE
         if (removeProduct == 1) {
-            // console.log(isCartExist);
-            const updatedCart = await cartModel.findOneAndUpdate(
+    
+                  const updatedCart = await cartModel.findOneAndUpdate(
                 { userId: userId, "items.productId": productId },
                 {
                     $inc: {
@@ -297,13 +287,13 @@ const updateCartById = async function (req, res) {
 const deleteCart = async function (req, res) {
     try {
 
-        // Validate params
+  
         userId = req.params.userId
         if (!isvalidObjectId(userId)) {
             return res.status(400).send({ status: false, message: `given userId: ${userId} is not valid` })
         }
 
-        //  To check user is present or not
+        
         const userSearch = await userModel.findById({ _id: userId })
         if (!userSearch) {
             return res.status(404).send({ status: false, message: "User details are not found " })

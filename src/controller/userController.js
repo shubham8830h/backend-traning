@@ -39,10 +39,10 @@ const createUser = async (req, res) => {
 
         //validation for email
 
-        if (!isValid(email.toLowerCase())) {
+        if (!isValid(email)) {
             return res.status(400).send({ status: false, message: "provide the email" })
         }
-        if (!isValidEmail(email.toLowerCase())) {
+        if (!isValidEmail(email)) {
             return res.status(400).send({ status: false, message: "provide the valid email" })
         }
         const checkUser = await userModel.findOne({ email: email.toLowerCase() });
@@ -50,11 +50,7 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status: false, message: "email already exists" })
         }
 
-        //validation for profileImage
-        // if (profileImage) {//proper work nahi kr raha hai
-        // if (profileImage.length === 0) 
-        // return res.status(400).send({ status: false, message: "ProfileImage is required." });
-        // console.log(files)
+       
         if (profileImage && profileImage.length > 0) {
             if (!isValidImage(profileImage[0].mimetype)) return res.status(400).send({ status: false, message: "provide the valid profileImage" })
             let uploadedFileURL = await uploadFile(profileImage[0]);
@@ -245,15 +241,10 @@ const updateprofile = async function (req, res) {
         if ((Object.keys(body).length === 0) && (!profileImage)) {
             return res.status(400).send({ status: false, message: "Please enter updations details" })
         }
-        // if(!(body || profileImage))  return res.status(400).send({ status: false, message: "Please enter updations details" })
+       
         let { fname, lname, email, phone, password, address } = body
-        // console.log(body)
-        // let shipping = req.body.address
-        // let billing = req.body.address
-
-
-        let updations = {}
-        // console.log(updations)
+         let updations = {}
+        
 
         if (fname != null) {
             if (!isValid(fname)) return res.status(400).send({ status: false, message: "Please enter fname" })
@@ -339,7 +330,7 @@ const updateprofile = async function (req, res) {
         }
 
         let updatedData = await userModel.findByIdAndUpdate({ _id: userId }, { $set: updations }, { new: true })
-        // console.log(updatedData)
+
         if (!updatedData) return res.status(404).send({ status: false, message: "No User found " })
         return res.status(201).send({ status: true, message: "updated successfully", data: updatedData })
 

@@ -97,10 +97,10 @@ const getProduct = async function (req, res) {
         }
         // validation for name
         if (name) {
-            // name = name.toUpperCase()  
+
             if (!isValid(name)) return res.status(400).send({ status: false, message: "Product title is required" });
             if (!isValidName(name)) return res.status(400).send({ status: false, message: "Product title should be valid" });
-            // { <field>: { $regex: /pattern/, $options: '<options>' } }
+           
             filter.title = { $regex: name, $options: "i" }  //product  Product1 ,,,,procude lkj
         };
 

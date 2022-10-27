@@ -37,10 +37,7 @@ const isValidPassword = function (value) {
 const isvalidObjectId = function (objectId) {
     return mongoose.Types.ObjectId.isValid(objectId)
 };
-// const isValidISBN = function (value) {
-//     const Regex = /^(?:ISBN(?:-13)?:? )?(?=[0-9]{13}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)97[89][- ]?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9]$/
-//     return Regex.test(value);
-// }
+
 
 const isValidPinCode = function (pincode) {
     const Regex = /^[1-9]{1}[0-9]{5}$/   //    55555
@@ -52,7 +49,7 @@ const isValidDate = function (date) {
     return Regex.test(date)
 }
 const isValidMixed = function (value) {
-    //  const regex = /(?<![0-9]\S{0,100})[^a-zA-Z](?!\S{0,100}[0-9])|(?<=[0-9]\S{0,100})[^a-zA-Z0-9-](?=\S{0,100}[0-9])/
+   
     const regex = /^[a-zA-Z0-9_.-]*$/
     return regex.test(value)
 }
@@ -69,7 +66,7 @@ const isValidBody = function (value) {
 
 const isValidImage = function (value) {
     const Regex = /image\/png|image\/jpeg|image\/jpg/
-    //  const Regex = (/^.*\.(jpg|JPG|gif|GIF|webp|tiff?|bmp|png|PNG|pdf|jpeg|JPEG)$/)
+    
     return Regex.test(value);
 }
 const isValidPrice = function (value) {
