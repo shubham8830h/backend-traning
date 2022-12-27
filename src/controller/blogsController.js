@@ -68,23 +68,25 @@ if(!validUserId){
 
 
 const deletedByParams=async(req,res)=>{
-  try{
-  let userData =req.params.blogId
-  if(!userData){
-    return res.status(400).send({status:false,msg:"invalid blogId"})
-  }
-  let validUserId=await blogsModel.findById({_id:userData})
-  if(validUserId.isPublished === true||validUserId.isDeleted==true){
-    res.status(404).send({status:false,msg:"The blog document is not found"})
-  }
-  let allBlogs=await blogsModel.findOneAndUpdate(
-      {isDeleted:false},
-      {$set:{isDeleted:true,deletedAt:Date.now()}},
-      {new:true}
-  )
-  return res.status(200).send({status:true,msg:allBlogs})
-  }catch(err){
-    res.status(500).send({status:false,error:err.message})
+  try {
+    let userData = req.params.blogId;
+    if (!userData) {
+      return res.status(400).send({ status: false, msg: "invalid blogId" });
+    }
+    let validUserId = await blogsModel.findById({ _id: userData });
+    if (validUserId.isPublished === true || validUserId.isDeleted == true) {
+      res
+        .status(404)
+        .send({ status: false, msg: "The blog document is not found" });
+    }
+    let allBlogs = await blogsModel.findOneAndUpdate(
+      { isDeleted: false },
+      { $set: { isDeleted: true, deletedAt: Date.now() } },
+      { new: true }
+    );
+    return res.status(200).send({ status: true, msg: allBlogs });
+  } catch (err) {
+    res.status(500).send({ status: false, error: err.message });
   }
 }
 
